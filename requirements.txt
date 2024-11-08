@@ -3,7 +3,7 @@ anyio
 APScheduler==3.10.4
 asgiref==3.8.1
 certifi==2024.8.30
-Django==5.1.2
+Django
 h11==0.14.0
 httpcore==1.0.6
 httpx==0.27.2
