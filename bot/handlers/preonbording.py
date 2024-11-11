@@ -293,14 +293,13 @@ async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    # В зависимости от типа работы отправляем соответствующее сообщение
     if user.work_type == 'Офис':
         text = (
             "Круто! Тогда лови наш адрес и видео-путеводитель, чтобы добраться до нас!\n\n"
             "Адрес: Холодильный пер. 3, офис 325"
         )
-        # Отправка видео как файл
-        video_url = "https://disk.yandex.ru/i/948L4A1ZazDpEg"
+        video_url = "BAACAgIAAxkDAAIOnWcxEf6quN2QTBOyU7x9tbhRRo_hAAI2aAACiaCISQEvQDiSnIpANgQ"
+        await update.message.reply_video(video=video_url, read_timeout=120, write_timeout=120, connect_timeout=120)
         await update.message.reply_text(
             text=text,
             parse_mode="Markdown",

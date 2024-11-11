@@ -22,6 +22,10 @@ class TelegramUser(models.Model):
         verbose_name="Тип работы",
         null=True, blank=True
     )
+    timepad = models.IntegerField(
+        verbose_name="количество таймпадов",
+        default=0,
+    )
 
     def __str__(self):
         return self.username
@@ -52,3 +56,11 @@ class Code(models.Model):
     class Meta:
         verbose_name = "Код доступа"
         verbose_name_plural = "Коды доступа"
+
+
+class Video(models.Model):
+    video = models.FileField(upload_to='videos/')
+    number = models.IntegerField()
+
+    def __str__(self):
+        return f"Video {self.number}"

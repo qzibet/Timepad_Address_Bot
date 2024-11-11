@@ -3,7 +3,8 @@ from telegram.ext import ContextTypes
 from asgiref.sync import sync_to_async
 import logging
 
-from bot.handlers.conversations_states import DAY_1, DAY_2
+from bot.handlers import day_2
+from bot.handlers.conversations_states import DAY_1, DAY_2, DAY_3
 from bot.models import TelegramUser, Code
 
 logger = logging.getLogger(__name__)
@@ -390,4 +391,5 @@ async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown",
         reply_markup=button,
     )
-    return DAY_2[17]
+    await day_2.block_0(update, context)
+    return DAY_3[0]

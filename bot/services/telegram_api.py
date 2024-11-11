@@ -1,13 +1,15 @@
 import asyncio
 import logging
+import os
 
 from asgiref.sync import sync_to_async
 
-from bot.handlers.conversations_states import DAY_1, DAY_2
-from bot.handlers import preonbording, day_of_work
+from bot.handlers.conversations_states import DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6
+from bot.handlers import preonbording, day_of_work, day_2, day_3, day_4, day_5
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ConversationHandler, JobQueue
 from datetime import datetime, time, timedelta
 from django.utils.timezone import make_aware
+from dotenv import load_dotenv
 
 from bot.models import Code
 
@@ -19,7 +21,7 @@ class TelegramBot:
         asyncio.run(self.initialize_bot())
 
     async def initialize_bot(self):
-        self.token = "7437555334:AAHUo2Pwo5Hy9P3q0-2qIjT7sxCK5IWlcTs"
+        self.token = os.getenv("TOKEN")
         self.application = Application.builder().token(self.token).build()
         self.job_queue = JobQueue()
         self.job_queue.set_application(self.application)
@@ -28,7 +30,7 @@ class TelegramBot:
 
     async def add_handlers(self):
         conversation_handler = ConversationHandler(
-            entry_points=[CommandHandler("start", preonbording.start)],  # Обработчик для команды /start
+            entry_points=[CommandHandler("start", day_5.block_0)],  # Обработчик для команды /start
             states={
                 DAY_1[0]: [MessageHandler(filters.Regex("^Юхуу, погнали$") & ~filters.COMMAND, preonbording.ask_for_code)],
                 DAY_1[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, preonbording.request_access_code)],
@@ -57,6 +59,51 @@ class TelegramBot:
                 DAY_2[15]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_16)],
                 DAY_2[16]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_17)],
                 DAY_2[17]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_17)],
+                DAY_3[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_1)],
+                DAY_3[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_2)],
+                DAY_3[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_3)],
+                DAY_3[3]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_4)],
+                DAY_3[4]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_5)],
+                DAY_3[5]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_6)],
+                DAY_3[6]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_7)],
+                DAY_3[7]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_8)],
+                DAY_3[8]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_9)],
+                DAY_3[9]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_10)],
+                DAY_3[10]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_11)],
+                DAY_3[11]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_12)],
+                DAY_3[12]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_13)],
+                DAY_3[13]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_14)],
+                DAY_3[14]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_15)],
+                DAY_3[15]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_16)],
+                DAY_3[16]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_17)],
+                DAY_3[17]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_18)],
+                DAY_3[18]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_19)],
+                DAY_3[19]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_20)],
+                DAY_3[20]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_21)],
+                DAY_3[21]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_22)],
+                DAY_3[22]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_23)],
+                DAY_4[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_1)],
+                DAY_4[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_2)],
+                DAY_4[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_3)],
+                DAY_4[3]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_4)],
+                DAY_4[4]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_5)],
+                DAY_5[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_1)],
+                DAY_5[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_2)],
+                DAY_5[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_3)],
+                DAY_5[3]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_4)],
+                DAY_5[4]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_5)],
+                DAY_5[5]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_6)],
+                DAY_5[6]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_7)],
+                DAY_5[7]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_8)],
+                DAY_5[8]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_9)],
+                DAY_5[9]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_10)],
+                DAY_5[10]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_11)],
+                DAY_5[11]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_12)],
+                DAY_5[12]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_13)],
+                DAY_5[13]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_14)],
+                DAY_5[14]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_15)],
+                DAY_5[15]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_16)],
+                DAY_6[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_1)],
             },
             fallbacks=[CommandHandler("start", preonbording.start)],  # Обработчик для повторного вызова команды /start
         )
