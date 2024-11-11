@@ -86,5 +86,4 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         caption=text_2,
         reply_markup=button
     )
-    return DAY_6[2]
 

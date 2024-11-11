@@ -30,7 +30,7 @@ class TelegramBot:
 
     async def add_handlers(self):
         conversation_handler = ConversationHandler(
-            entry_points=[CommandHandler("start", day_5.block_0)],  # Обработчик для команды /start
+            entry_points=[CommandHandler("start", preonbording.start)],  # Обработчик для команды /start
             states={
                 DAY_1[0]: [MessageHandler(filters.Regex("^Юхуу, погнали$") & ~filters.COMMAND, preonbording.ask_for_code)],
                 DAY_1[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, preonbording.request_access_code)],
@@ -104,6 +104,7 @@ class TelegramBot:
                 DAY_5[14]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_15)],
                 DAY_5[15]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_16)],
                 DAY_6[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_1)],
+                DAY_6[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_2)],
             },
             fallbacks=[CommandHandler("start", preonbording.start)],  # Обработчик для повторного вызова команды /start
         )
