@@ -24,7 +24,7 @@ class TelegramUser(models.Model):
     )
     timepad = models.IntegerField(
         verbose_name="количество таймпадов",
-        default=0,
+        default=0, null=True, blank=True
     )
 
     def __str__(self):
