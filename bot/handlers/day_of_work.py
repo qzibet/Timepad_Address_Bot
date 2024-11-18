@@ -1,3 +1,6 @@
+import os
+
+from django.conf import settings
 from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes
 from asgiref.sync import sync_to_async
@@ -13,37 +16,58 @@ logger = logging.getLogger(__name__)
 async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.message.chat_id
     user = await sync_to_async(TelegramUser.objects.get)(chat_id=chat_id)
-
-    text = (
-        f"Привет, {user.name}!\n\n"
-        "На связи Таймика 📻 ВАЖНАЯ ИНФОРМАЦИЯ!\n\n"
-        "Твоя **встреча с HR** уже совсем скоро - мы ждём тебя в **11:00!**\n\n"
-        "**Вот ссылка на [встречу в ZOOM](https://your-zoom-link.com)**\n\n"
-        "**Заходи ровно в 11:00!**"
-    )
     photo_url = "https://disk.yandex.ru/i/_ghhRcXzCavlEw"
-    button = "Буду!"
-    keyboard = ReplyKeyboardMarkup(
-        [[button]],
-        resize_keyboard=True,
-        one_time_keyboard=True
-    )
+    video = os.path.join(settings.MEDIA_ROOT, "Ценности и Миссия  (1).mp4")
 
-    await update.message.reply_photo(
-        photo=photo_url,
-        caption=text,
-        parse_mode="Markdown",
-        reply_markup=keyboard
-    )
-    return DAY_2[0]
+    if user.work_type == 'Офис':
+        text = (
+            f"Привет, {user.name}!\n\n"
+            "На связи Таймика 📻 \n\n"
+            "Я помогу тебе с пользой провести время до встречи с HR: давай погрузимся "
+            "в мир наших ценностей и миссии! 😉\n\n"
+        )
+        button = "Давай!"
+        keyboard = ReplyKeyboardMarkup(
+            [[button]],
+            resize_keyboard=True,
+            one_time_keyboard=True
+        )
+        await update.message.reply_photo(
+            photo=photo_url,
+            caption=text,
+            parse_mode="Markdown",
+            reply_markup=keyboard
+        )
+        return DAY_2[0]
+    else:
+        text = (
+            f"Привет, {user.name}!\n\n"
+            "На связи Таймика 📻 ВАЖНАЯ ИНФОРМАЦИЯ!\n\n"
+            "Твоя **встреча с HR** уже совсем скоро - мы ждём тебя в **11:00!**\n\n"
+            "**Вот ссылка на [встречу в ZOOM](https://your-zoom-link.com)**\n\n"
+            "**Заходи ровно в 11:00!**"
+        )
+        button = "Буду!"
+        keyboard = ReplyKeyboardMarkup(
+            [[button]],
+            resize_keyboard=True,
+            one_time_keyboard=True
+        )
+
+        await update.message.reply_photo(
+            photo=photo_url,
+            caption=text,
+            parse_mode="Markdown",
+            reply_markup=keyboard
+        )
+
+    # Переход к следующему блоку после выполнения основной логики
+        return DAY_2[0]
 
 
 async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = (
-        "Я помогу тебе с пользой провести время до нашей встречи: "
-        "давай погрузимся в мир наших ценностей и миссии! 😉"
-    )
-    video = "ggg"
+    chat_id = update.message.chat_id
+    user = await sync_to_async(TelegramUser.objects.get)(chat_id=chat_id)
     button = "Вдохновляет!"
     keyboard = ReplyKeyboardMarkup(
         [[button]],
@@ -51,10 +75,28 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_text(
-        reply_markup=keyboard,
-        text=text,
-    )
+    if user.work_type == 'Офис':
+        await context.bot.send_video(
+            chat_id=chat_id,
+            video="BAACAgIAAxkBAAIVMGc6bQdEZLDVp_0wEaPrIqQRJjRlAAK7aAACoAjRSTdax4VaYUryNgQ",
+            parse_mode="Markdown",
+            reply_markup=keyboard
+        )
+    else:
+        text = (
+            "Я помогу тебе с пользой провести время до нашей встречи: "
+            "давай погрузимся в мир наших ценностей и миссии! 😉"
+        )
+        await update.message.reply_text(
+            reply_markup=keyboard,
+            text=text,
+        )
+        await context.bot.send_video(
+            chat_id=chat_id,
+            video="BAACAgIAAxkBAAIVMGc6bQdEZLDVp_0wEaPrIqQRJjRlAAK7aAACoAjRSTdax4VaYUryNgQ",
+            parse_mode="Markdown",
+            reply_markup=keyboard
+        )
 
     return DAY_2[1]
 
@@ -82,7 +124,7 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Удачи тебе! 🍀\n\n"
-        "**Напиши мне после встречи!** У меня есть, что тебе рассказать 🤭."
+        "**Напиши мне после встречи!** У меня есть, что тебе рассказать 🤭"
     )
     button = "Встреча прошла прекрасно!"
     keyboard = ReplyKeyboardMarkup(
@@ -229,7 +271,7 @@ async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "📑 За кадровый документооборот у нас отвечает **Аня Саухина.** @Chodarova \n\n"
-        "💳 За зарплату **Настя Шувалова.**  Не забывай записывать номера коллег, они 100% тебе пригодятся"    )
+        "💳 За зарплату **Настя Шувалова.**  Не забывай записывать номера коллег, они 100% тебе пригодятся")
     button = (
         "Уже в контактах 🫡"
     )
@@ -248,13 +290,19 @@ async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "Что ещё важно знать: \n\n"
-        "💳 Зарплата приходит **5 и 20 числа каждого месяца,** если твое офорлмение по ТК РФ. \n\n"
-        "Если у тебя иная форма взаимодейтсвия с нами, то даты выплат нужно уточнить **у Ани Саухиной.**"
+        "Что ещё важно знать:\n\n"
+        "💳 Зарплата приходит **5 и 20 числа каждого месяца,** если твое оформление по ТК РФ.\n\n"
+        "**Аванс:** (20го числа)\n"
+        "Это сумма, которая рассчитывается за отработанные дни с 1 по 15 число. "
+        "(Поэтому в январе всегда маленький аванс, так как мы там совсем немножко работаем).\n\n"
+        "**Зарплата:**\n"
+        "5го числа приходит остальная сумма по твоему договору.\n\n"
+        "**Формула такая:** зарплата/на количество рабочих дней*на отработанные дни.\n\n"
+        "**Например:** зарплата на руки 120 000. В июле 23 рабочих дня. Отработано 11 дней (с 1 по 15 июля).\n"
+        "120 000/23*11= 57 391. Значит в зарплату придет оставшаяся часть = 62 609.\n\n"
+        "📝Если у тебя иная форма взаимодействия с нами, то даты выплат нужно уточнить **у Ани Саухиной** @Chodarova"
     )
-    button = (
-        "Оки-доки"
-    )
+    button = "Оки-доки"
     keyboard = ReplyKeyboardMarkup(
         [[button]],
         resize_keyboard=True,
@@ -271,7 +319,8 @@ async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "У нас есть система кадрового электронного документооборота (сокращенно - **КЭДО**). \n\n"
-        "Система, которую мы используем - ТинькоффКЭДО. сотрудников используется интерфейс - https://work.jump.finance/ \n\n"
+        "Система, которую мы используем - ТинькоффКЭДО. сотрудников "
+        "используется интерфейс - https://work.jump.finance/ \n\n"
         "По всем вопросам о КЭДО можно обратиться к **Анне Саухиной**.\n\n"
         "А тебе в помощь - короткое видео про КЭДО, наслаждайся!"
     )
@@ -287,12 +336,12 @@ async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
+        disable_web_page_preview=True
     )
     return DAY_2[12]
 
 
 async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    video_url = "Видео пока в разработке"
     button = (
          "Понял, принял"
     )
@@ -301,8 +350,8 @@ async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
-        text=video_url,
+    await update.message.reply_video(
+        video="BAACAgIAAxkBAAIYj2c6fOSdrqhTWMmRRzNDDi-TZ1CfAAL2aAACoAjRSRIpjvM5t642NgQ",
         parse_mode="Markdown",
         reply_markup=keyboard
     )
@@ -313,7 +362,8 @@ async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "А теперь - приятное, про отпуск и волшебный день! 🏝️ \n\n"
-        "Заходи по [ссылке] (https://telegra.ph/Otpusk-bolnichnyj-ili-volshebnyj-den-10-29) и читай важную информацию! \n\n"
+        "Заходи по [ссылке](https://telegra.ph/Otpusk-bolnichnyj-ili-volshebnyj-den-10-29) и "
+        "читай важную информацию! \n\n"
         ""
     )
     button_1 = (
@@ -331,6 +381,7 @@ async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
+        disable_web_page_preview=True
     )
     return DAY_2[14]
 
@@ -359,7 +410,7 @@ async def block_15(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "Если тебе нужна справка  с работы - переходи по [ссылке] (https://telegra.ph/Spravka-s-raboty-10-29) "
+        "Если тебе нужна справка  с работы - переходи по [ссылке](https://telegra.ph/Spravka-s-raboty-10-29) "
         "и ты узнаешь как ее получить 🙌"
     )
     button = (
@@ -374,6 +425,7 @@ async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
+        disable_web_page_preview=True
     )
     return DAY_2[16]
 

@@ -83,6 +83,7 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         photo=photo_url,
         caption=text_2,
         reply_markup=keyboard,
+        parse_mode="Markdown",
     )
 
     return DAY_5[2]
@@ -236,7 +237,7 @@ async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "могли бы встретиться онлайн/офлайн и круто провести время!\n\n"
         "За регистрацию в Random coffee тебе также упадет **10 таймпадиков!*"
     )
-    await update.message.reply_text(text=text)
+    await update.message.reply_text(text=text, parse_mode="Markdown")
     await update.message.reply_text("Как пройдешь регистрацию - возвращайся ко мне!")
     button_1 = "РЕГИСТРАЦИЯ ПРОЙДЕНА, жду новые знакомства! ☕️"
     button_2 = "Пока подумаю!"
@@ -300,8 +301,11 @@ async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "А вот и ссылка на записи наших корпоративных мероприятий! (делай ТЫК на слово 'мероприяти'). \n\n"
-        "ссылка на гугл диск от Юлии \n\n"
+        "Как прошёл месяц в Timepad? — общая встреча, где команды делятся своими "
+        "успехами в прошлом месяце и планами на следующий. \n\n"
+        "Как это было? \n\n"
+        "[Записи и презентации мероприятий](https://www.notion.so/42d7ebd5335844e2afacbb1c6f0c061a?pvs=21) \n\n"
+        "[Корпоративные мероприятия](https://www.notion.so/4c1bcbf52bef458c8b5af800e94c8871?pvs=21) \n\n"
         "P.S. Как только посмотришь видео - нажимай \"просмотрено\"."
     )
     button = "Просмотрено ✅"
@@ -373,7 +377,8 @@ async def block_15(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         text=text,
         parse_mode="Markdown",
-        reply_markup=keyboard
+        reply_markup=keyboard,
+        disable_web_page_preview=True
     )
     return DAY_5[15]
 

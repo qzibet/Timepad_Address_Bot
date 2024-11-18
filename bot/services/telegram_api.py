@@ -6,11 +6,13 @@ from asgiref.sync import sync_to_async
 
 from bot.handlers.conversations_states import DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6
 from bot.handlers import preonbording, day_of_work, day_2, day_3, day_4, day_5
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ConversationHandler, JobQueue
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ConversationHandler, JobQueue, \
+    CallbackQueryHandler
 from datetime import datetime, time, timedelta
 from django.utils.timezone import make_aware
 from dotenv import load_dotenv
 
+from bot.handlers.faq import faq, handle_callback_query
 from bot.models import Code
 
 logger = logging.getLogger(__name__)
@@ -110,6 +112,9 @@ class TelegramBot:
         )
 
         self.application.add_handler(conversation_handler)
+        self.application.add_handler(CommandHandler("faq", faq))
+        self.application.add_handler(CallbackQueryHandler(handle_callback_query))  # Обработчик для кнопок
+
         await self.schedule_daily_tasks()
 
     @sync_to_async

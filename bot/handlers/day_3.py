@@ -31,8 +31,8 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Спасибо за искренность! \n\n"
-        "Сегодня хочу тебе рассказать про то, как важно хвалить коллег и давать обратную связь! \n\n"
-        "Для этого у нас есть целый сервис  - **AppRaise**."
+        "Еще у нас принято хвалить коллег и давать обратную связь! 🤩 \n\n"
+        "Для обратной связи мы встречаемся пару раз в год, попозже узнаешь об этом подробнее ☺"
     )
     photo_url = "https://disk.yandex.ru/i/On_TE_d_hpjfYA"
     button = "Как интересно!"
@@ -83,6 +83,7 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         text=text,
         reply_markup=keyboard,
+        parse_mode="Markdown",
     )
     return DAY_4[3]
 

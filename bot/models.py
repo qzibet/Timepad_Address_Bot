@@ -64,3 +64,33 @@ class Video(models.Model):
 
     def __str__(self):
         return f"Video {self.number}"
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Название категории")
+    description = models.TextField(verbose_name="Описание категории", blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+
+
+class FAQ(models.Model):
+    post = models.TextField(verbose_name="Пост")
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name="faqs",
+        verbose_name="Категория"
+    )
+
+    def __str__(self):
+        return self.post
+
+    class Meta:
+        verbose_name = "База знаний"
+        verbose_name_plural = "База знаний"
+

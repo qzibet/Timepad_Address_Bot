@@ -1,5 +1,7 @@
+import os
 from datetime import date
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes
@@ -30,7 +32,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "похожий на пуговицу🔢 - кнопки прячутся там!"
     )
 
-    welcome_back_text = "Привет! Давно тебя не было"
+    welcome_back_text = (
+        "Привет! Я твой друг **Таймпадрес-бот**! Рады, что ты совсем скоро "
+        "станешь частью нашей команды Таймпад! Я вместе со своей помощницей "
+        "**Таймикой** помогу тебе адаптироваться и пройти этот путь легко.\n\n"
+        "Если я сломаюсь или у меня отвалятся какие-то винтики, то обратись "
+        "к нашему **Мастеру Винтиков** (кнопка в меню - Тех. поддержка) 🙌\n\n"
+        "**Мини-инструкция**: если не приходит следующее сообщение и ты не видишь "
+        "кнопку на экране, ищи кнопки в строке ввода сообщений. Справа будет знак, "
+        "похожий на пуговицу🔢 - кнопки прячутся там!"
+    )
     if not user:
         await save_user(user_name, chat_id)
         text = welcome_text
@@ -45,7 +56,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text = welcome_back_text
             next_state = DAY_1[2]
 
-    photo_url = "https://disk.yandex.ru/i/ufYMni4x127dhQ"
+    photo_url = os.path.join(settings.MEDIA_ROOT, "sticker.webp")
+
     button = KeyboardButton("Юхуу, погнали")
     keyboard = ReplyKeyboardMarkup(
         [[button]],
@@ -53,9 +65,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_photo(
-        photo=photo_url,
-        caption=text,
+    await update.message.reply_sticker(
+        sticker=open(photo_url, 'rb'),
+    )
+    await update.message.reply_text(
+        text=text,
         parse_mode="Markdown",
         reply_markup=keyboard
     )
@@ -164,7 +178,7 @@ async def save_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         "Здорово! А теперь давай познакомимся с тобой поближе 😉\n\n"
-        "Заполни, пожалуйста, анкету (делай ТЫК на слово \"[анкета](https://client.app-raise.org/ru/surveys/2647/3d9673f5-6b04-4650-9890-aa7b59162ce4/)\").\n\n"
+        "Заполни, пожалуйста, [анкету](https://client.app-raise.org/ru/surveys/2647/3d9673f5-6b04-4650-9890-aa7b59162ce4) .\n\n"
         "P.S. Как только пройдешь анкету, снова возвращайся ко мне в бот и нажимай \"Всё готово\".\n\n"
         "P.P.S. Не пугайся, если не увидишь по возвращению кнопку - она спряталась в меню рядом с полем для сообщений."
     )
@@ -222,33 +236,43 @@ async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def block_6(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        'Лови наш стикер-пак (делай ТЫК на слово "[стикер-пак](https://t.me/addstickers/timepadres)") '
+        'Лови наш [стикер-пак](https://t.me/addstickers/timepadres)! \n\n'
         'И читай историю создания этих картинок 😉'
     )
 
     await update.message.reply_text(
         text=text,
         parse_mode="Markdown",
+        disable_web_page_preview=True
     )
 
-    document_url = "https://s604vla.storage.yandex.net/rdisk/836e6d5a86ddb541ade405f938f5cc549f99ee03d3ea3a22afffe75135034779/672c38cf/MM8Im2FXnMYzmVy63dTdDHjYfQuQmLs1A96lQqEXlb0bs7C_aNanj0mF_gRhxM_8taQd9GC_w8tfazEX5li6QQ==?uid=0&filename=%D0%98%D1%81%D1%82%D0%BE%D1%80%D0%B8%D1%8F_%D0%A1%D1%82%D0%B8%D0%BA%D0%B5%D1%80%D0%BF%D0%B0%D0%BA%D0%B0.pdf&disposition=attachment&hash=MV%2F8f%2FpP4VsWGP6Wj8m8WTgaAVnuxMX0HzIhPb6YjATxI2915oCVC5b1QdqR4kPrG7pWpVQYsubyrcajHimPFw%3D%3D&limit=0&content_type=application%2Fpdf&owner_uid=1130000064556865&fsize=4866463&hid=9c2b58a1908ba469c48366b0225eddcd&media_type=document&tknv=v2&ts=6264a85d491c0&s=1df1e7318d6ec5dbdbf0fb583f71dd5f4c4f582aaa8f85246c707dd6ff14bf27&pb=U2FsdGVkX18_jJDXO_tK2_RICA_C-7vx2DBiVMgx4oxmxIvqoFO9d-Fye6V0eXCpN92UsUouH8J4RSIl7MnONO86z13GbKXiwMy999pyxcM"  # Убедитесь, что ссылка доступна и поддерживается
+    # document_url = "https://s604vla.storage.yandex.net/rdisk/836e6d5a86ddb541ade405f938f5cc549f99ee03d3ea3a22afffe75135034779/672c38cf/MM8Im2FXnMYzmVy63dTdDHjYfQuQmLs1A96lQqEXlb0bs7C_aNanj0mF_gRhxM_8taQd9GC_w8tfazEX5li6QQ==?uid=0&filename=%D0%98%D1%81%D1%82%D0%BE%D1%80%D0%B8%D1%8F_%D0%A1%D1%82%D0%B8%D0%BA%D0%B5%D1%80%D0%BF%D0%B0%D0%BA%D0%B0.pdf&disposition=attachment&hash=MV%2F8f%2FpP4VsWGP6Wj8m8WTgaAVnuxMX0HzIhPb6YjATxI2915oCVC5b1QdqR4kPrG7pWpVQYsubyrcajHimPFw%3D%3D&limit=0&content_type=application%2Fpdf&owner_uid=1130000064556865&fsize=4866463&hid=9c2b58a1908ba469c48366b0225eddcd&media_type=document&tknv=v2&ts=6264a85d491c0&s=1df1e7318d6ec5dbdbf0fb583f71dd5f4c4f582aaa8f85246c707dd6ff14bf27&pb=U2FsdGVkX18_jJDXO_tK2_RICA_C-7vx2DBiVMgx4oxmxIvqoFO9d-Fye6V0eXCpN92UsUouH8J4RSIl7MnONO86z13GbKXiwMy999pyxcM"  # Убедитесь, что ссылка доступна и поддерживается
     button = KeyboardButton("Спасибо ❤️")
     keyboard = ReplyKeyboardMarkup(
         [[button]],
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_document(
-        document=document_url,
-        reply_markup=keyboard
+    document_url = "История_Стикерпака.pdf"
+    message = await update.message.reply_document(
+        document="BQACAgIAAxkDAAITK2c1IbY1QkGSM7kqoeMhF-JsxflHAAL6YAACioSpSdRADa5NyBAkNgQ",
+        filename="История_Стикерпака.pdf",
+        reply_markup=keyboard,
+        connect_timeout=120,
+        read_timeout=120,
+        write_timeout=120,
+        pool_timeout=120
     )
+
+    document_id = message.document.file_id
+    print(f"Document ID: {document_id}")
 
     return DAY_1[6]
 
 
 async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "Ждём тебя в первый рабочий день в нашем **офисе - если ты работаешь из Москвы,** "
+        "Ждём тебя в первый рабочий день в нашем **офисе - если ты работаешь из Москвы**, "
         "а если **удаленно - пришлем тебе ссылку на зум!**"
     )
     office_button = "Я приду в офис!"

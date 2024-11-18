@@ -1,12 +1,8 @@
-from io import BytesIO
-
-from asgiref.sync import sync_to_async
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes
 import logging
 
 from bot.handlers.conversations_states import DAY_6
-from bot.models import Video
 
 logger = logging.getLogger(__name__)
 
