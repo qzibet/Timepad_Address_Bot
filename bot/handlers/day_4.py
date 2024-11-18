@@ -238,7 +238,7 @@ async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "**Как это работает?** После регистрации в [боте](https://t.me/Timepadres_bot),"
         "раз в неделю тебе будет приходить ссылка на твоего нового random coffee друга, с которым вы "
         "могли бы встретиться онлайн/офлайн и круто провести время!\n\n"
-        "За регистрацию в Random coffee тебе также упадет **10 таймпадиков!*"
+        "За регистрацию в Random coffee тебе также упадет **10 таймпадиков!**"
     )
     await update.message.reply_text(text=text, parse_mode="Markdown")
     await update.message.reply_text("Как пройдешь регистрацию - возвращайся ко мне!")
