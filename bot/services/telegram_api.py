@@ -88,7 +88,6 @@ class TelegramBot:
                 DAY_4[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_2)],
                 DAY_4[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_3)],
                 DAY_4[3]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_4)],
-                DAY_4[4]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_5)],
                 DAY_5[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_1)],
                 DAY_5[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_2)],
                 DAY_5[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_3)],
