@@ -51,24 +51,24 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_4[1]
 
 
+# async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
+#     text = (
+#         "здесь ИНФА про  сервис и регистрация!"
+#     )
+#     button = "Теперь буду использовать 👍"
+#     keyboard = ReplyKeyboardMarkup(
+#         [[button]],
+#         resize_keyboard=True,
+#         one_time_keyboard=True
+#     )
+#     await update.message.reply_text(
+#         text=text,
+#         reply_markup=keyboard,
+#     )
+#     return DAY_4[2]
+
+
 async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = (
-        "здесь ИНФА про  сервис и регистрация!"
-    )
-    button = "Теперь буду использовать 👍"
-    keyboard = ReplyKeyboardMarkup(
-        [[button]],
-        resize_keyboard=True,
-        one_time_keyboard=True
-    )
-    await update.message.reply_text(
-        text=text,
-        reply_markup=keyboard,
-    )
-    return DAY_4[2]
-
-
-async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Это еще не все хорошие новости! \n\n"
         "Два раза в год мы проводим исследование и **измеряем счастье сотрдуников**! \n\n"
@@ -85,10 +85,10 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=keyboard,
         parse_mode="Markdown",
     )
-    return DAY_4[3]
+    return DAY_4[2]
 
 
-async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Конечно, мы будем очень рады, если и ты будешь принимать участие и "
         "помогать становится нам лучше 🤗"
@@ -104,10 +104,10 @@ async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=text,
         reply_markup=keyboard,
     )
-    return DAY_4[4]
+    return DAY_4[3]
 
 
-async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Супер! На сегодня это все! Пойду делать еще дела 🤓 \n\n"
         "С тобой было очень приятно и тепло! Увидимся завтра! 🧡"
