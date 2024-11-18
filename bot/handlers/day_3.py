@@ -1,5 +1,7 @@
 import logging
+import os
 
+from django.conf import settings
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes
 
@@ -34,7 +36,10 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Еще у нас принято хвалить коллег и давать обратную связь! 🤩 \n\n"
         "Для обратной связи мы встречаемся пару раз в год, попозже узнаешь об этом подробнее ☺"
     )
-    photo_url = "https://disk.yandex.ru/i/On_TE_d_hpjfYA"
+    photo_url = os.path.join(settings.MEDIA_ROOT, "likesticker.webp")
+    await update.message.reply_sticker(
+        sticker=open(photo_url, 'rb'),
+    )
     button = "Как интересно!"
     keyboard = ReplyKeyboardMarkup(
         [[button]],
@@ -42,9 +47,8 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_photo(
-        photo=photo_url,
-        caption=text,
+    await update.message.reply_text(
+        text=text,
         parse_mode="Markdown",
         reply_markup=keyboard
     )
@@ -71,8 +75,8 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Это еще не все хорошие новости! \n\n"
-        "Два раза в год мы проводим исследование и **измеряем счастье сотрдуников**! \n\n"
-        "Вот результаты актуального исследования: **79% eNPS**. \n\n"
+        "Два раза в год мы проводим исследование и *измеряем счастье сотрдуников*! \n\n"
+        "Вот результаты актуального исследования: *79% eNPS*. \n\n"
     )
     button = "Ого! Вот это упех!🤩"
     keyboard = ReplyKeyboardMarkup(

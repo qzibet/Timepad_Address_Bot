@@ -1,3 +1,6 @@
+import os
+
+from django.conf import settings
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes
 import logging
@@ -20,10 +23,12 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-
-    await update.message.reply_photo(
-        photo="https://disk.yandex.ru/i/OYKRdet92EJXLA",
-        caption=text,
+    photo_url = os.path.join(settings.MEDIA_ROOT, "5daysticker.webp")
+    await update.message.reply_sticker(
+        sticker=open(photo_url, 'rb'),
+    )
+    await update.message.reply_text(
+        text=text,
         reply_markup=keyboard,
     )
     return DAY_6[0]
@@ -50,15 +55,15 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "**Бадди = друг, товарищ**🫱🏼‍🫲🏻 \n\n"
+        "*Бадди = друг, товарищ*🫱🏼‍🫲🏻 \n\n"
         "Который помогает новичкам адаптироваться в коллективе. \n\n"
-        "*Название \"бадди\" происходит от английского слова \"buddy\", что переводится как \"друг\". *"
-        "**С чем бадди помогает: **\n\n"
+        "_Название \"бадди\" происходит от английского слова \"buddy\", что переводится как \"друг\". _ \n\n"
+        "*С чем бадди помогает: *\n\n"
         "✌🏼Знакомство с коллективом и корпоративной культурой \n\n"
         "✌🏼Помощь в освоении рабочих процессов и инструментов \n\n"
         "✌🏼Ответы на вопросы и разъяснение неопределенностей \n\n"
         "✌🏼Создание комфортной и поддерживающей атмосферы \n\n"
-        "**Что не должен делать бадди:** \n\n"
+        "*Что не должен делать бадди:* \n\n"
         "✋🏼Бадди не должен выполнять за новичка его обязанности или брать на себя его задачи \n\n"
         "✋🏼Не следует превращать поддержку в чрезмерное вмешательство или контроль \n\n"
         "✋🏼Бадди не должен навязывать свое мнение или методы работы, вместо этого он должен быть "
@@ -69,6 +74,7 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         text=text,
         reply_markup=button,
+        parse_mode="Markdown",
     )
 
     text_2 = (
@@ -76,10 +82,12 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Успехов тебе! И если нужна информация, заходи сюда и пользуйся Базой знаний \n\n"
         "Пока-пока!"
     )
-
-    await update.message.reply_photo(
-        photo="https://disk.yandex.ru/i/DbOiVozWm1rGMQ",
-        caption=text_2,
+    photo_url = os.path.join(settings.MEDIA_ROOT, "heartsticker.webp")
+    await update.message.reply_sticker(
+        sticker=open(photo_url, 'rb'),
+    )
+    await update.message.reply_text(
+        text=text_2,
         reply_markup=button
     )
 

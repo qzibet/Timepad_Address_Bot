@@ -1,6 +1,7 @@
 import os
 import re
 
+from django.conf import settings
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes
 from asgiref.sync import sync_to_async
@@ -36,12 +37,12 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    photo_url = "https://disk.yandex.ru/i/g1x7ZAxQoITwSA"
+    photo_url = os.path.join(settings.MEDIA_ROOT, "tsticker.webp")
     text = (
         "Сегодня мы познакомим тебя с Timepad и расскажем про наши продукты!\n\n"
         "💡Kind reminder:  Всех, кто встречается на твоем пути в этом боте сохраняй в контакты: "
-        "**Фамилия Имя должность/отдел и название компании**\n\n"
-        "Например, Юлия Маликова HR Timepad @malikovaj "
+        "*Фамилия Имя должность/отдел и название компании*\n\n"
+        "Например, Юлия Маликова HR Timepad @malikovaj (делай ТЫК, чтобы ещё раз сохранить котакт Юли)."
         "Это поможет тебе быстро находить коллег в чатах."
     )
 
@@ -52,12 +53,15 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_photo(
-        photo=photo_url,
-        caption=text,
+    await update.message.reply_sticker(
+        sticker=open(photo_url, 'rb'),
+    )
+    await update.message.reply_text(
+        text=text,
         parse_mode="Markdown",
         reply_markup=keyboard
     )
+
     return DAY_3[1]
 
 
@@ -75,7 +79,7 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user.timepad = 5
     await save_user(user)
 
-    photo_url = "https://disk.yandex.ru/i/g1x7ZAxQoITwSA"
+    photo_url = os.path.join(settings.MEDIA_ROOT, "5sticker.webp")
     text = (
         "А еще, у нас есть своя внутренняя валюта - **таймпадики**!\n\n"
         "Их можно потратить на билеты, на разные плюшки от нас и на мерч! Об этом ещё расскажем позже. "
@@ -89,18 +93,20 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_photo(
-        photo=photo_url,
-        caption=text,
+    await update.message.reply_text(
+        text=text,
         parse_mode="Markdown",
         reply_markup=keyboard
+    )
+    await update.message.reply_sticker(
+        sticker=open(photo_url, 'rb'),
     )
     return DAY_3[2]
 
 
 async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "Это наша [Афиша](https://afisha.timepad.ru)) "
+        "Это наша [Афиша](https://afisha.timepad.ru)) (делай ТЫК на слово \"афиша\") "
         "Про нее расскажет Директор по развитию билетного бизнеса Даша Егорова @darialvistner"
     )
     button = "Приятно познакомиться 😊"
@@ -120,9 +126,9 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "А теперь задание: **найди интересное для тебя мероприятие на нашей [Афише](https://afisha.timepad.ru)** "
-        "**и скинь его Юлии HR.**\n\n"
-        "P.S. После выполнения задания ты получишь **пароль от Юлии и 5 таймпадиков от Таймики.**"
+        "А теперь задание: *найди интересное для тебя мероприятие на нашей* [Афише](https://afisha.timepad.ru) "
+        "и *скинь его Юлии HR.*\n\n"
+        "P.S. После выполнения задания ты получишь *пароль от Юлии и 5 таймпадиков от Таймики.*"
     )
     button = "Пароль у меня, где мои таймпадики?"
     keyboard = ReplyKeyboardMarkup(
@@ -140,7 +146,18 @@ async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Prompt user to enter a password.
+    """
+    chat_id = update.effective_chat.id
+    user = await get_user_by_chat_id(chat_id)
+    user.timepad += 5
+    await save_user(user)
     button = ReplyKeyboardRemove()
+    photo_url = os.path.join(settings.MEDIA_ROOT, "5sticker.webp")
+    await update.message.reply_sticker(
+        sticker=open(photo_url, 'rb'),
+    )
     text = "Отлично! Вводи полученный пароль и пойдём дальше!"
     await update.message.reply_text(text, reply_markup=button)
 
@@ -148,40 +165,51 @@ async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_3[5]
 
 
+async def verify_password(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
+    """
+    Verify the entered password.
+    """
+    password = update.message.text
+    return password == SECRET_PASSWORD
+
+
 async def block_6(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if context.user_data.get('awaiting_password', False):
-        password = update.message.text
+    """
+    Process the password input and navigate further if correct.
+    """
+    if not context.user_data.get('awaiting_password', False):
+        # If we are not awaiting a password, redirect to the starting block or raise an error
+        await update.message.reply_text("Что-то пошло не так. Попробуй начать сначала.")
+        return DAY_3[0]  # Возвращаем в начало, если состояние не найдено
 
-        if password == SECRET_PASSWORD:
-            context.user_data['awaiting_password'] = False
-            return DAY_3[6]
-        else:
-            await update.message.reply_text("Пароль неверный 😓 попробуй ещё раз!")
-            await block_5(update, context)
+    if await verify_password(update, context):
+        # Password is correct
+        context.user_data['awaiting_password'] = False
+        text = ("Продолжим наше знакомство\\!\n\n"
+                "У нас есть журнал \"Спасите мои выходные\"\\. Про него расскажет "
+                "\\(руководитель отдела маркетинга Даша Гайдукова @dasha\\_gaydukova\\)\n\n"
+                "P\\.S\\. Ты записываешь новые контакты\\?\\)")
 
-
-async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = ("Продолжим наше знакомство\\!\n\n"
-            "У нас есть журнал \"Спасите мои выходные\"\\. Про него расскажет "
-            "\\(руководитель отдела маркетинга Даша Гайдукова @dasha\\_gaydukova\\)\n\n"
-            "P\\.S\\. Ты записываешь новые контакты\\?\\)")
-
-    button = "Здорово! Что дальше?"
-    keyboard = ReplyKeyboardMarkup(
+        button = "Здорово! Что дальше?"
+        keyboard = ReplyKeyboardMarkup(
             [[button]],
             resize_keyboard=True,
             one_time_keyboard=True
-    )
+        )
 
-    await update.message.reply_text(
-        text=text,
-        parse_mode="MarkdownV2",
-        reply_markup=keyboard
-    )
-    return DAY_3[7]
+        await update.message.reply_text(
+            text=text,
+            parse_mode="MarkdownV2",
+            reply_markup=keyboard
+        )
+        return DAY_3[6]  # Указываем переход на следующий блок
+    else:
+        # Password is incorrect
+        await update.message.reply_text("Пароль неверный 😓 попробуй ещё раз!")
+        return DAY_3[5]  # Оставляем состояние прежним, чтобы повторить ввод
 
 
-async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = ("Выбери эмоджи, которое лучше всего описывает твои идеальные выходные:")
     button_1 = "🖼"
     button_2 = "🌳"
@@ -198,10 +226,10 @@ async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown",
         reply_markup=keyboard
     )
-    return DAY_3[8]
+    return DAY_3[7]
 
 
-async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = update.message.text
     print(response)
     button = "О, да! Вдохновляет!"
@@ -232,26 +260,29 @@ async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=keyboard,
         disable_web_page_preview=True
     )
-    return DAY_3[9]
+    return DAY_3[8]
 
 
-async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     user = await get_user_by_chat_id(chat_id)
     user.timepad += 5
     await save_user(user)
 
-    photo_url = "https://disk.yandex.ru/i/g1x7ZAxQoITwSA"
+    photo_url = os.path.join(settings.MEDIA_ROOT, "5sticker.webp")
     text = "Лови **еще 5 таймпадиков!** Погнали дальше!"
 
-    await update.message.reply_photo(
-        photo=photo_url,
-        caption=text,
+    await update.message.reply_text(
+        text=text,
         parse_mode="Markdown",
+    )
+    await update.message.reply_sticker(
+        sticker=open(photo_url, 'rb'),
     )
 
     text_2 = (
         "У нас ещё есть tg-канал [Спасите мои выходные](https://t.me/TimepadRU) "
+        "(делай ТЫК на \"Спасите мои выходные\", чтобы перейти в канал ). "
         "Про него подробнее расскажет наша СММщица Маша Попова @marypopossa"
     )
     button = "Круто!"
@@ -268,13 +299,17 @@ async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
         disable_web_page_preview=True
     )
 
-    return DAY_3[10]
+    return DAY_3[9]
 
 
-async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "А теперь небошьшое задание для тебя 😉: подпишись на tg-канал "
         "\"Спасите мои выходные\". @TimepadRU"
+    )
+    photo_url = os.path.join(settings.MEDIA_ROOT, "meditationsticker.webp")
+    await update.message.reply_sticker(
+        sticker=open(photo_url, 'rb'),
     )
     button = "Готово ✅"
     keyboard = ReplyKeyboardMarkup(
@@ -289,17 +324,16 @@ async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=keyboard
     )
 
-    return DAY_3[11]
+    return DAY_3[10]
 
 
-async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     user = await get_user_by_chat_id(chat_id)
     user.timepad += 5
     await save_user(user)
 
-    photo_url = "https://disk.yandex.ru/i/e9OYMWi8p8hIXg"
-    text = ("Лови 5 таймпадиков и 100 плюсов к карме за поддержку отдела!")
+    text = ("Лови *5 таймпадиков* и 100 плюсов к карме за поддержку отдела!")
 
     button = "Ура!"
     keyboard = ReplyKeyboardMarkup(
@@ -308,17 +342,20 @@ async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
             one_time_keyboard=True
     )
 
-    await update.message.reply_photo(
-        photo=photo_url,
-        caption=text,
+    await update.message.reply_text(
+        text=text,
         parse_mode="Markdown",
         reply_markup=keyboard
     )
 
-    return DAY_3[12]
+    photo_url = os.path.join(settings.MEDIA_ROOT, "5sticker.webp")
+    await update.message.reply_sticker(
+        sticker=open(photo_url, 'rb'),
+    )
+    return DAY_3[11]
 
 
-async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Еще у нас есть два подкаста, которые ты можешь послушать на досуге:\n\n"
         "🎧\"Спасите мои выходные\" с генеральным директором [Варей Семенихиной](https://savemyweekend.mave.digital)\n\n"
@@ -338,10 +375,10 @@ async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
         disable_web_page_preview=True
     )
 
-    return DAY_3[13]
+    return DAY_3[12]
 
 
-async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Теперь бежим знакомиться с коллегами из отдела рекламы! \n\n"
         "У нас есть множество рекламных инструментов, про которые нам расскажет руководитель "
@@ -360,10 +397,10 @@ async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=keyboard
     )
 
-    return DAY_3[14]
+    return DAY_3[13]
 
 
-async def block_15(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Согласись, у нас много всего интересного? 🎪"
     )
@@ -380,10 +417,10 @@ async def block_15(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=keyboard
     )
 
-    return DAY_3[15]
+    return DAY_3[14]
 
 
-async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_15(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['test_score'] = 0
     text = (
         "Давай сделаем чек-ап того, что запомнил! \n\n"
@@ -400,7 +437,7 @@ async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text_2 = (
         "Тогда погнали! \n\n"
-        "И первый вопрос, **в какой системе мы ставим задачи?**"
+        "И первый вопрос, *в какой системе мы ставим задачи?*"
     )
     await update.message.reply_text(
         text=text_2,
@@ -408,10 +445,10 @@ async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=button
     )
 
-    return DAY_3[16]
+    return DAY_3[15]
 
 
-async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = update.message.text
 
     if re.search(r"\bева\b", response, re.IGNORECASE):
@@ -421,15 +458,21 @@ async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user.timepad += 1
         await save_user(user)
         await update.message.reply_text("Верно! + 1 таймпадик")
-        await update.message.reply_text("Второй вопрос, в какие дни у нас приходит зарплата?")
+        await update.message.reply_text(
+            "Второй вопрос, *в какие дни у нас приходит зарплата?*",
+            parse_mode="Markdown",
+        )
     else:
         await update.message.reply_text("Эх, как же ты забыл нашу ЕВУ😓")
-        await update.message.reply_text("Второй вопрос, в какие дни у нас приходит зарплата?")
+        await update.message.reply_text(
+            "Второй вопрос, *в какие дни у нас приходит зарплата?*",
+            parse_mode="Markdown",
+        )
 
-    return DAY_3[17]
+    return DAY_3[16]
 
 
-async def block_18(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = update.message.text
 
     if re.search(r"\b5\b" and r"\b20\b", response, re.IGNORECASE):
@@ -440,20 +483,20 @@ async def block_18(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await save_user(user)
         await update.message.reply_text("Верно! + 1 таймпадик")
         await update.message.reply_text(
-            "Третий вопрос, **как назывется наш tg-канал с афишой?**",
+            "Третий вопрос, *как назывется наш tg-канал с афишой?*",
             parse_mode="Markdown",
         )
     else:
         await update.message.reply_text("Записывай в календарь - 5 и 20 🗓️")
         await update.message.reply_text(
-            "Третий вопрос, **как назывется наш tg-канал с афишой?**",
+            "Третий вопрос, *как назывется наш tg-канал с афишой?*",
             parse_mode="Markdown",
         )
 
-    return DAY_3[18]
+    return DAY_3[17]
 
 
-async def block_19(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_18(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = update.message.text
 
     if re.search(r"\bСпасите мои выходные\b", response, re.IGNORECASE):
@@ -464,8 +507,8 @@ async def block_19(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await save_user(user)
         await update.message.reply_text("Верно! + 1 таймпадик")
         await update.message.reply_text(
-            "Четвертый вопрос, **где можно педелиться своими фотками с коллегами и неформально пообщаться? "
-            "**(это какой-то из наших внутренних каналов, не нельзяграмм 😂)",
+            "Четвертый вопрос, *где можно педелиться своими фотками с коллегами и неформально пообщаться?* "
+            "(это какой-то из наших внутренних каналов, не нельзяграмм 😂)",
             parse_mode="Markdown",
         )
     else:
@@ -475,10 +518,10 @@ async def block_19(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "**(это какой-то из наших внутренних каналов, не нельзяграмм 😂)",
             parse_mode="Markdown",
         )
-    return DAY_3[19]
+    return DAY_3[18]
 
 
-async def block_20(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_19(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = update.message.text
 
     if re.search(r"\bOfftop Timepad\b", response, re.IGNORECASE):
@@ -489,19 +532,19 @@ async def block_20(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await save_user(user)
         await update.message.reply_text("Верно! + 1 таймпадик")
         await update.message.reply_text(
-            "И финалный - пятый вопрос, **как зовут помощницу Таймпадрес бота?**",
+            "И финалный - пятый вопрос, *как зовут помощницу Таймпадрес бота?*",
             parse_mode="Markdown",
         )
     else:
         await update.message.reply_text("Правильно - Offtop Timepad, скорее кидай туда свою фотку 📸")
         await update.message.reply_text(
-            "И финалный - пятый вопрос, **как зовут помощницу Таймпадрес бота?**",
+            "И финалный - пятый вопрос, *как зовут помощницу Таймпадрес бота?*",
             parse_mode="Markdown",
         )
-    return DAY_3[20]
+    return DAY_3[19]
 
 
-async def block_21(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_20(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = update.message.text
     button = "Тест пройден 📋"
     keyboard = ReplyKeyboardMarkup(
@@ -526,10 +569,10 @@ async def block_21(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=keyboard
         )
 
-    return DAY_3[21]
+    return DAY_3[20]
 
 
-async def block_22(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_21(update: Update, context: ContextTypes.DEFAULT_TYPE):
     test_score = context.user_data.get('test_score', 0)
     text = (
         "Ты молодец! Лови еще заслуженную награду!"
@@ -543,15 +586,15 @@ async def block_22(update: Update, context: ContextTypes.DEFAULT_TYPE):
     remove_button = ReplyKeyboardRemove()
 
     if test_score == 1:
-        image_url = "https://disk.yandex.ru/i/sLgJsP-BUHEBBA"
+        image_url = os.path.join(settings.MEDIA_ROOT, "1sticker.webp")
     elif test_score == 2:
-        image_url = "https://disk.yandex.ru/i/iYuvVWAoxkaYCQ"
+        image_url = os.path.join(settings.MEDIA_ROOT, "2sticker.webp")
     elif test_score == 3:
-        image_url = "https://disk.yandex.ru/i/QZ_B6-N5P-aWiw"
+        image_url = os.path.join(settings.MEDIA_ROOT, "3sticker.webp")
     elif test_score == 4:
-        image_url = "https://disk.yandex.ru/i/QonQ3L8CPexhWA"
+        image_url = os.path.join(settings.MEDIA_ROOT, "4sticker.webp")
     elif test_score >= 5:
-        image_url = "https://disk.yandex.ru/i/nocYHnbfjMJY3Q"
+        image_url = os.path.join(settings.MEDIA_ROOT, "5sticker.webp")
     else:
         button_2 = "Хорошо, сделаю💪"
         keyboard_2 = ReplyKeyboardMarkup(
@@ -564,17 +607,19 @@ async def block_22(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "она тебе точно пригодится в работе!",
             reply_markup=keyboard_2
         )
-        return DAY_3[22]
+        return DAY_3[21]
 
-    await update.message.reply_photo(
-        photo=image_url,
-        caption=text,
+    await update.message.reply_text(
+        text=text,
         reply_markup=keyboard
     )
-    return DAY_3[22]
+    await update.message.reply_sticker(
+        sticker=open(image_url, 'rb'),
+    )
+    return DAY_3[21]
 
 
-async def block_23(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_22(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "На сегодня это все! Встретимся завтра и продолжим! Чао 🖐"
     )
