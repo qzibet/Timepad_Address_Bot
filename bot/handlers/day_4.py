@@ -38,7 +38,8 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "Начнем с корпоративных скидок (от нас и наших компаний-друзей)! ссылка из ноушена про скидки от Юли"
+        "Начнем с корпоративных скидок (от нас и наших компаний-друзей)! \n\n"
+        "[Жми сюда](https://telegra.ph/Bonusy-i-partnerskie-skidki-11-14)"
     )
     button = "Скидочки-скидочки 💳"
 
@@ -51,6 +52,8 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         text=text,
         reply_markup=keyboard,
+        parse_mode="Markdown",
+        disable_web_page_preview=True
     )
     return DAY_5[1]
 
