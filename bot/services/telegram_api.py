@@ -115,36 +115,33 @@ class TelegramBot:
         self.application.add_handler(CommandHandler("faq", faq))
         self.application.add_handler(CommandHandler("help", support))
         self.application.add_handler(CallbackQueryHandler(handle_callback_query))  # Обработчик для кнопок
-
-        await self.schedule_daily_tasks()
+        #
+        # await self.schedule_daily_tasks()
 
     @sync_to_async
     def get_user_code(self, user_id):
         return Code.objects.filter(user__chat_id=user_id).first()
 
-    async def schedule_daily_tasks(self):
-        codes = await sync_to_async(list)(
-            Code.objects.filter(start_date__isnull=False)
-        )
+    # async def schedule_daily_tasks(self):
+    #     codes = await sync_to_async(list)(
+    #         Code.objects.filter(start_date__isnull=False)
+    #     )
+    #
+    #     for code in codes:
+    #         start_time = make_aware(
+    #             datetime.combine(
+    #                 code.start_date, time(10, 0)
+    #             )
+    #         )
+    #         current_time = make_aware(datetime.now())
+    #
+    #         if start_time > current_time:
+    #             self.job_queue.run_once(
+    #                 self.start_day_2,
+    #                 when=(start_time - current_time).total_seconds(),
+    #                 data=code.user
+    #             )
 
-        for code in codes:
-            start_time = make_aware(
-                datetime.combine(
-                    code.start_date, time(10, 0)
-                )
-            )
-            current_time = make_aware(datetime.now())
-
-            if start_time > current_time:
-                self.job_queue.run_once(
-                    self.start_day_2,
-                    when=(start_time - current_time).total_seconds(),
-                    data=code.user
-                )
-
-    def start_day_2(self, context):
-        user = context.job.data
-        day_of_work.block_0(user, context)
 
     def run(self):
         loop = asyncio.new_event_loop()
