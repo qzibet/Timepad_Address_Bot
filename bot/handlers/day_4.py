@@ -209,7 +209,7 @@ async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await save_user(user)
 
     text = (
-        "Лови *10 таймпадиков* и беги к Ване за паролем 🏃🏼‍♂️\n\n"
+        "Лови *10 таймпадиков* и беги к Юле за паролем 🏃🏼‍♂️\n\n"
     )
 
     button = ReplyKeyboardRemove()

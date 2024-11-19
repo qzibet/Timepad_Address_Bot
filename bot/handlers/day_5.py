@@ -69,19 +69,49 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "✋🏼Бадди не должен навязывать свое мнение или методы работы, вместо этого он должен быть "
         "открытым для вопросов и проблем новичка"
     )
-    button = ReplyKeyboardRemove()
+    button = "Ого! Как классно!"
 
+    keyboard = ReplyKeyboardMarkup(
+        [[button]],
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
     await update.message.reply_text(
         text=text,
-        reply_markup=button,
+        reply_markup=keyboard,
         parse_mode="Markdown",
     )
 
+    return DAY_6[2]
+
+
+async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = (
+        "А вот и контакт твоего Бадди. Можешь написать ему или подождать, пока он с тобой свяжется 🤗 \n\n"
+        "@fruktstyle"
+    )
+    button = "Спасибо за контакт!"
+
+    keyboard = ReplyKeyboardMarkup(
+        [[button]],
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+    await update.message.reply_text(
+        text=text,
+        reply_markup=keyboard,
+        parse_mode="Markdown",
+    )
+    return DAY_6[3]
+
+
+async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text_2 = (
         "Ну что же, еще раз поздравляем тебя с первой рабочей неделей! \n\n"
         "Успехов тебе! И если нужна информация, заходи сюда и пользуйся Базой знаний \n\n"
         "Пока-пока!"
     )
+    button = ReplyKeyboardRemove()
     photo_url = os.path.join(settings.MEDIA_ROOT, "heartsticker.webp")
     await update.message.reply_sticker(
         sticker=open(photo_url, 'rb'),
@@ -90,4 +120,3 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=text_2,
         reply_markup=button
     )
-

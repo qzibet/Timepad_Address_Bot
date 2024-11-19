@@ -12,7 +12,7 @@ from datetime import datetime, time, timedelta
 from django.utils.timezone import make_aware
 from dotenv import load_dotenv
 
-from bot.handlers.faq import faq, handle_callback_query
+from bot.handlers.faq import faq, handle_callback_query, support
 from bot.models import Code
 
 logger = logging.getLogger(__name__)
@@ -104,12 +104,16 @@ class TelegramBot:
                 DAY_5[14]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_15)],
                 DAY_6[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_1)],
                 DAY_6[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_2)],
+                DAY_6[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_3)],
+                DAY_6[3]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_4)],
+
             },
             fallbacks=[CommandHandler("start", preonbording.start)],  # Обработчик для повторного вызова команды /start
         )
 
         self.application.add_handler(conversation_handler)
         self.application.add_handler(CommandHandler("faq", faq))
+        self.application.add_handler(CommandHandler("help", support))
         self.application.add_handler(CallbackQueryHandler(handle_callback_query))  # Обработчик для кнопок
 
         await self.schedule_daily_tasks()
