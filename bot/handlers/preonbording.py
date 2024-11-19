@@ -165,7 +165,6 @@ async def request_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         text = f"{late_message}\n\n{text}"
     else:
-        await update.message.reply_text(text=text, reply_markup=button)
         next_state = DAY_1[0]
 
     await update.message.reply_text(text=text, reply_markup=button)
