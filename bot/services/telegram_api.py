@@ -4,15 +4,11 @@ import os
 
 from asgiref.sync import sync_to_async
 
-from bot.handlers.conversations_states import DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6
-from bot.handlers import preonbording, day_of_work, day_2, day_3, day_4, day_5
+from bot.handlers.conversations_states import DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6, MONTH_1, MONTH_2, MONTH_3
+from bot.handlers import preonbording, day_of_work, day_2, day_3, day_4, day_5, month_1, month_2, month_3
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ConversationHandler, JobQueue, \
     CallbackQueryHandler
-from datetime import datetime, time, timedelta
-from django.utils.timezone import make_aware
-from dotenv import load_dotenv
-
-from bot.handlers.faq import faq, handle_callback_query, support
+from bot.handlers.faq import faq, handle_callback_query, support, wallet
 from bot.models import Code
 
 logger = logging.getLogger(__name__)
@@ -43,6 +39,7 @@ class TelegramBot:
                 DAY_1[6]: [MessageHandler(filters.TEXT & ~filters.COMMAND, preonbording.block_7)],
                 DAY_1[7]: [MessageHandler(filters.TEXT & ~filters.COMMAND, preonbording.block_8)],
                 DAY_1[8]: [MessageHandler(filters.TEXT & ~filters.COMMAND, preonbording.block_9)],
+                DAY_1[9]: [MessageHandler(filters.TEXT & ~filters.COMMAND, preonbording.block_10)],
                 DAY_2[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_1)],
                 DAY_2[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_2)],
                 DAY_2[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_3)],
@@ -60,7 +57,9 @@ class TelegramBot:
                 DAY_2[14]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_15)],
                 DAY_2[15]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_16)],
                 DAY_2[16]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_17)],
-                DAY_2[17]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_17)],
+                DAY_2[17]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_18)],
+                DAY_2[18]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_19)],
+                DAY_2[19]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_of_work.block_20)],
                 DAY_3[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_1)],
                 DAY_3[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_2)],
                 DAY_3[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_3)],
@@ -83,6 +82,7 @@ class TelegramBot:
                 DAY_3[19]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_20)],
                 DAY_3[20]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_21)],
                 DAY_3[21]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_22)],
+                DAY_3[22]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_2.block_23)],
                 DAY_4[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_1)],
                 DAY_4[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_2)],
                 DAY_4[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_3.block_3)],
@@ -101,11 +101,23 @@ class TelegramBot:
                 DAY_5[11]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_12)],
                 DAY_5[12]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_13)],
                 DAY_5[13]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_14)],
-                DAY_5[14]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_4.block_15)],
                 DAY_6[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_1)],
                 DAY_6[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_2)],
                 DAY_6[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_3)],
                 DAY_6[3]: [MessageHandler(filters.TEXT & ~filters.COMMAND, day_5.block_4)],
+                MONTH_1[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_1.block_1)],
+                MONTH_1[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_1.block_2)],
+                MONTH_1[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_1.block_3)],
+                MONTH_1[3]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_2.block_0)],
+                MONTH_2[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_2.block_1)],
+                MONTH_2[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_2.block_2)],
+                MONTH_2[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_2.block_3)],
+                MONTH_2[3]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_2.block_4)],
+                MONTH_2[4]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_3.block_0)],
+                MONTH_3[0]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_3.block_1)],
+                MONTH_3[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_3.block_2)],
+                MONTH_3[2]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_3.block_3)],
+                MONTH_3[3]: [MessageHandler(filters.TEXT & ~filters.COMMAND, month_3.block_4)],
 
             },
             fallbacks=[CommandHandler("start", preonbording.start)],  # Обработчик для повторного вызова команды /start
@@ -114,6 +126,8 @@ class TelegramBot:
         self.application.add_handler(conversation_handler)
         self.application.add_handler(CommandHandler("faq", faq))
         self.application.add_handler(CommandHandler("help", support))
+        self.application.add_handler(CommandHandler("wallet", wallet))
+
         self.application.add_handler(CallbackQueryHandler(handle_callback_query))  # Обработчик для кнопок
         #
         # await self.schedule_daily_tasks()

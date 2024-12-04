@@ -5,7 +5,8 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes
 import logging
 
-from bot.handlers.conversations_states import DAY_6
+from bot.handlers import month_1
+from bot.handlers.conversations_states import DAY_6, MONTH_1
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +109,8 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text_2 = (
         "Ну что же, еще раз поздравляем тебя с первой рабочей неделей! \n\n"
-        "Успехов тебе! И если нужна информация, заходи сюда и пользуйся Базой знаний \n\n"
+        "Успехов тебе! И если нужна информация, заходи сюда и пользуйся Базой знаний "
+        "(найдешь ее в Меню - синяя кнопка слева от строки сообщений). \n\n"
         "Пока-пока!"
     )
     button = ReplyKeyboardRemove()
@@ -118,5 +120,8 @@ async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await update.message.reply_text(
         text=text_2,
-        reply_markup=button
+        reply_markup=button,
+        parse_mode="Markdown",
     )
+    await month_1.block_0(update, context)
+    return MONTH_1[0]

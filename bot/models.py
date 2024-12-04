@@ -26,6 +26,21 @@ class TelegramUser(models.Model):
         verbose_name="количество таймпадов",
         default=0, null=True, blank=True
     )
+    mood_third_day = models.CharField(
+        max_length=50,
+        verbose_name="настроение в третий день",
+        null=True, blank=True
+    )
+    mood_second_month = models.CharField(
+        max_length=50,
+        verbose_name="настроение на втором месяце",
+        null=True, blank=True
+    )
+    employment_type = models.CharField(
+        max_length=50,
+        verbose_name="форма взаимодействия",
+        null=True, blank=True
+    )
 
     def __str__(self):
         return self.username
@@ -94,3 +109,9 @@ class FAQ(models.Model):
         verbose_name = "База знаний"
         verbose_name_plural = "База знаний"
 
+
+# class PreonbordingLinks(models.Model):
+#     acquaintance = models.URLField(verbose_name="форма для знакомства")
+#
+#
+#
