@@ -67,7 +67,6 @@ async def save_user(user):
 async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = update.message.text
 
-
     if response in ["Все прекрасно!", "Норм"]:  # Исправлено на проверку вхождения строки
         text = (
             "Я рад, что все хорошо. Столько всего интересного нас ждет! 🌺"
@@ -82,6 +81,7 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=button,
             parse_mode="Markdown",
         )
+        return MONTH_2[2]
     else:
         text = (
             "Оу, сочувствую тебе! 😕 Если есть сложности или вопросы, ты всегда можешь обратиться за поддержкой "

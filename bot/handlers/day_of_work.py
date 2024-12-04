@@ -54,14 +54,15 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Привет, {user.name}!\n\n"
             "На связи Таймика 📻 ВАЖНАЯ ИНФОРМАЦИЯ!\n\n"
             "Твоя *встреча с HR* уже совсем скоро - мы ждём тебя в *11:00!*\n\n"
-            "*Вот ссылка на [встречу в ZOOM](https://us02web.zoom.us/j/86826507585?pwd=qmo2josZPIVmEJzV8cnrd3FRKlIjl7.1)*\n\n"
+            "*Вот ссылка на* [встречу в ZOOM](https://us02web.zoom.us/j/86826507585?pwd=qmo2josZPIVmEJzV8cnrd3FRKlIjl7.1)\n\n"
             "*Заходи ровно в 11:00!*"
         )
         button = "Буду!"
         keyboard = ReplyKeyboardMarkup(
             [[button]],
             resize_keyboard=True,
-            one_time_keyboard=True
+            one_time_keyboard=True,
+
         )
 
         await update.message.reply_sticker(
@@ -71,7 +72,8 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             text=text,
             parse_mode="Markdown",
-            reply_markup=keyboard
+            reply_markup=keyboard,
+            disable_web_page_preview=True
         )
 
     # Переход к следующему блоку после выполнения основной логики
@@ -166,6 +168,7 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
+        disable_web_page_preview=True
     )
     return DAY_2[3]
 
