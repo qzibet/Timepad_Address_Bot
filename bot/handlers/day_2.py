@@ -373,7 +373,7 @@ async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Еще у нас есть два подкаста, которые ты можешь послушать на досуге:\n\n"
-        "🎧\"Спасите мои выходные\" с генеральным директором [Варей Семенихиной](https://savemyweekend.mave.digital) "
+        "🎧\"[Спасите мои выходные](https://savemyweekend.mave.digital)\" с генеральным директором Варей Семенихиной "
         "Подкаст о том, как найти любимое дело и превратить его в успешный бизнес! \n\n"
         "🎧\"[Точно идем](https://tochnoidem.mave.digital)\". Это подкаст от команды Timepad. В нем пробуем "
         "разобраться в хобби занятых горожан, открыть для себя новые увлечения для новой реальности и понять, "
@@ -505,7 +505,7 @@ async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Эх, как же ты забыл нашу ЕВУ😓")
         await update.message.reply_text(
-            "Второй вопрос, *в какие дни у нас приходит зарплата?*",
+            "Второй вопрос, *сколько у нас есть волшебных дней в году? 🪄*",
             parse_mode="Markdown",
         )
 
@@ -586,7 +586,7 @@ async def block_20(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown",
         )
     else:
-        await update.message.reply_text("Правильно - Offtop Timepad, скорее кидай туда свою фотку 📸")
+        await update.message.reply_text("Правильно - Offtop Timepad")
         cats_txt = (
             "Кстати, *каждую пятницу мы делимcя фотографиями своих четвероногих друзей!* Если у тебя есть питомец, "
             "то присоединяйся по пятницам к нашей милой традиции 🐾"
@@ -653,7 +653,7 @@ async def block_22(update: Update, context: ContextTypes.DEFAULT_TYPE):
         image_url = os.path.join(settings.MEDIA_ROOT, "3sticker.webp")
     elif test_score == 4:
         image_url = os.path.join(settings.MEDIA_ROOT, "4sticker.webp")
-    elif test_score >= 5:
+    elif test_score == 5:
         image_url = os.path.join(settings.MEDIA_ROOT, "5sticker.webp")
     else:
         button_2 = "Хорошо, сделаю💪"

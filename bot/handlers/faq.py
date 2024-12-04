@@ -31,44 +31,34 @@ def process_text_with_clickable_links(text: str) -> str:
 
 
 async def faq(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработчик команды /faq."""
-    categories = await sync_to_async(list)(Category.objects.all())
     keyboard = [
-        [InlineKeyboardButton(category.name, callback_data=f"category_{category.id}")]
-        for category in categories
+        [InlineKeyboardButton("К кому обратиться", callback_data="faq_contact")],
+        [InlineKeyboardButton("Кадровые вопросики",
+                              url="https://timepaddev.notion.site/a14985eb1bed48309ef1cb734c951fe7")],
+        [InlineKeyboardButton("Записи корп.встреч",
+                              url="https://drive.google.com/drive/u/1/folders/1SfpQp0jEX85E96lo32O7e8RU4tsXWXA")],
+        [InlineKeyboardButton("Корп. скидки", url="https://telegra.ph/Bonusy-i-partnerskie-skidki-11-14")],
+        [InlineKeyboardButton("Порекомендовать сотрудника", url="https://telegra.ph/Privodi-druga-v-komandu-11-25")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Выберите категорию:", reply_markup=reply_markup)
+
+    await update.message.reply_text(
+        text="Выберите нужный раздел:",
+        reply_markup=reply_markup
+    )
 
 
 async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработчик выбора категории."""
     query = update.callback_query
-    await query.answer()
-
-    if query.data.startswith("category_"):
-        category_id = int(query.data.split("_")[1])
-        faqs = await sync_to_async(list)(FAQ.objects.filter(category_id=category_id))
-        if faqs:
-            processed_faqs = [
-                f"- {process_text_with_clickable_links(faq.post)}" for faq in faqs
-            ]
-            text = "\n\n".join(processed_faqs)
-            await query.edit_message_text(
-                text=f"{text}",
-                parse_mode="HTML",  # Используем HTML
-                disable_web_page_preview=True
-            )
-        else:
-            await query.edit_message_text(
-                text="Нет постов в этой категории.",
-                parse_mode="HTML"
-            )
+    await query.answer()  # Чтобы уведомление кнопки не висело
+    await query.message.reply_photo(
+        photo="https://disk.yandex.ru/i/U9tZttrwpzXhpQ",
+    )
 
 
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "Лови контакты тех.поддержки: @fruktstyle"
+        "Лови контакты тех.поддержки: @devurfut"
     )
     button = ReplyKeyboardRemove()
     await update.message.reply_text(
