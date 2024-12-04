@@ -667,7 +667,7 @@ async def block_22(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "она тебе точно пригодится в работе!",
             reply_markup=keyboard_2
         )
-        return DAY_3[21]
+        return DAY_3[22]
 
     await update.message.reply_text(
         text=text,
