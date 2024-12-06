@@ -36,7 +36,7 @@ async def faq(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("Кадровые вопросики",
                               url="https://timepaddev.notion.site/a14985eb1bed48309ef1cb734c951fe7")],
         [InlineKeyboardButton("Записи корп.встреч",
-                              url="https://drive.google.com/drive/u/1/folders/1SfpQp0jEX85E96lo32O7e8RU4tsXWXA")],
+                              url="https://drive.google.com/drive/u/1/folders/1USKIBlxairb7cfkqHjvgEUUsNaYEspaE")],
         [InlineKeyboardButton("Корп. скидки", url="https://telegra.ph/Bonusy-i-partnerskie-skidki-11-14")],
         [InlineKeyboardButton("Порекомендовать сотрудника", url="https://telegra.ph/Privodi-druga-v-komandu-11-25")],
     ]
@@ -93,25 +93,27 @@ async def wallet(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Установка шрифта
         font_path = os.path.join(settings.MEDIA_ROOT, "Gamilia-Regular.otf")  # Замените на реальный путь
 
-        # Определяем оптимальный размер шрифта, чтобы цифра вписалась в высоту изображения
+        # Начинаем с базового размера шрифта
         base_font_size = 150
         font = ImageFont.truetype(font_path, size=base_font_size)
         text = str(user_timepad)
 
-        # Снижение размера шрифта для соответствия высоте изображения
-        text_width, text_height = font.getsize(text)
-        while text_height > img_height * 0.9:  # 90% высоты изображения
-            base_font_size -= 5
-            font = ImageFont.truetype(font_path, size=base_font_size)
+        # Автоматическая подгонка размера шрифта под высоту изображения
+        while True:
             text_width, text_height = font.getsize(text)
+            if text_height >= img_height:  # Если текст слишком большой
+                base_font_size -= 1
+                font = ImageFont.truetype(font_path, size=base_font_size)
+            else:
+                break
 
         # Создание нового изображения с увеличенной шириной для текста
         new_width = img_width + text_width + 50  # Дополнительное место для текста
-        new_height = max(img_height, text_height)  # Новая высота равна максимальной из двух
+        new_height = img_height  # Высота остаётся как у оригинального изображения
         new_img = Image.new("RGBA", (new_width, new_height), (0, 0, 0, 0))
 
         # Копирование оригинального изображения в новое
-        new_img.paste(img, (0, (new_height - img_height) // 2))
+        new_img.paste(img, (0, 0))
 
         # Позиция текста (справа от изображения)
         position = (img_width + 20, (new_height - text_height) // 2)
@@ -136,3 +138,4 @@ async def wallet(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Очистка клавиатуры (если нужно)
     button = ReplyKeyboardRemove()
+

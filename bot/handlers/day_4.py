@@ -17,7 +17,7 @@ IVAN_SECRET_PASSWORD = os.getenv("IVAN_SECRET_PASSWORD")
 async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "Доброе утро! \n\n"
-        "Начинаем день с зарядки и... разговора о корпоравтиных плюшках и всяких приколюхах! \n\n"
+        "Начинаем день с зарядки и... разговора о корпоративных плюшках и всяких приколюхах! \n\n"
         "Расскажем тебе о наших корпоративах и мероприятиях, а \"на десерт\" - ДМС!"
     )
     photo_url = os.path.join(settings.MEDIA_ROOT, "healthsticker.webp")
