@@ -81,7 +81,8 @@ class Code(models.Model):
 
 class FAQ(models.Model):
     name = models.TextField(verbose_name="Название")
-    post = models.URLField(verbose_name="ссылка")
+    post = models.URLField(verbose_name="ссылка", null=True, blank=True)
+    file = models.FileField(verbose_name="файл", null=True, blank=True, upload_to='uploads/',)
 
     def __str__(self):
         return self.name
@@ -126,9 +127,9 @@ class FirstDay(SingletonModel):
         verbose_name="ссылка на Offtop Timepad",
         null=True, blank=True,
     )
-    link_admin = models.URLField(
+    link_admin = models.CharField(
         verbose_name="контакт админа Барахолка и свопы",
-        null=True, blank=True,
+        null=True, blank=True, max_length=25
     )
     link_eva = models.URLField(
         verbose_name="ссылка на чат Ева",
@@ -151,6 +152,12 @@ class FirstDay(SingletonModel):
         verbose_name="Контакт ответственного за зарплату",
         max_length=255,
         null=True, blank=True,
+    )
+    hr_contact = models.CharField(
+        verbose_name="Контакт hr",
+        max_length=255,
+        null=True, blank=True,
+        default="@malikovaj"
     )
     interface_link = models.URLField(
         verbose_name="Ссылка на интерфейс для сотрудников",
