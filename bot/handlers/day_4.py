@@ -7,7 +7,7 @@ import logging
 
 from bot.handlers import day_5
 from bot.handlers.conversations_states import DAY_5, DAY_6
-from bot.models import TelegramUser
+from bot.models import TelegramUser, FourthDay
 from main import settings
 
 logger = logging.getLogger(__name__)
@@ -40,9 +40,12 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    discounts_link = await sync_to_async(
+        lambda: FourthDay.objects.first().corporate_discounts_link
+    )
     text = (
-        "Начнем с корпоративных скидок (от нас и наших компаний-друзей)! \n\n"
-        "[Жми сюда](https://telegra.ph/Bonusy-i-partnerskie-skidki-11-14)"
+        f"Начнем с корпоративных скидок (от нас и наших компаний-друзей)! \n\n"
+        f"[Жми сюда]({discounts_link})"
     )
     button = "Скидочки-скидочки 💳"
 
@@ -62,9 +65,12 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    form_link = await sync_to_async(
+        lambda: FourthDay.objects.first().birthday_form_link
+    )
     text_1 = (
-        "А еще мы любим поздравлять сотрудников с *ДНЕМ РОЖДЕНИЯ!* 🎂 \n\n"
-        "Заполни [форму](https://docs.google.com/forms/d/e/1FAIpQLSfpetjG_IOfiDmNmhnRt7vLFLzIcySa-loWm9mVPhthTU-k1w/viewform), "
+        f"А еще мы любим поздравлять сотрудников с *ДНЕМ РОЖДЕНИЯ!* 🎂 \n\n"
+        f"Заполни [форму]({form_link}), "
         "чтобы мы знали, когда кричать тебе HAPPY BIRTHDAY!!! 🎉 \n\n"
         "А ещё, не забудь *выбрать себе подарок *🤩"
     )

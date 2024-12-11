@@ -1,14 +1,14 @@
 import os
 
 from django.conf import settings
-from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes
 from asgiref.sync import sync_to_async
 import logging
 
 from bot.handlers import day_2
 from bot.handlers.conversations_states import DAY_1, DAY_2, DAY_3
-from bot.models import TelegramUser, Code
+from bot.models import TelegramUser, Code, FirstDay
 
 logger = logging.getLogger(__name__)
 
@@ -50,11 +50,14 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return DAY_2[0]
     else:
+        meet_link = await sync_to_async(
+            lambda: FirstDay.objects.first().link_zoom
+        )()
         text = (
             f"Привет, {user.name}!\n\n"
             "На связи Таймика 📻 ВАЖНАЯ ИНФОРМАЦИЯ!\n\n"
             "Твоя *встреча с HR* уже совсем скоро - мы ждём тебя в *11:00!*\n\n"
-            "*Вот ссылка на* [встречу в ZOOM](https://us02web.zoom.us/j/86826507585?pwd=qmo2josZPIVmEJzV8cnrd3FRKlIjl7.1)\n\n"
+            f"*Вот ссылка на* [встречу в ZOOM]({meet_link})\n\n"
             "*Заходи ровно в 11:00!*"
         )
         button = "Буду!"
@@ -152,8 +155,11 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "*Напиши мне после встречи!* У меня есть, что тебе рассказать 🤭"
         )
     else:
+        meet_link = await sync_to_async(
+            lambda: FirstDay.objects.first().link_zoom
+        )()
         text = (
-            "И еще раз [сылочка](https://us02web.zoom.us/j/86826507585?pwd=qmo2josZPIVmEJzV8cnrd3FRKlIjl7.1)"
+            f"И еще раз [сылочка]({meet_link})"
             " на встречу с HR. Ждём тебя в *11:00!* \n\n"
             "**После встречи нажми кнопку \"Встреча прошла!\"** \n\n"
             "Удачи! 🍀"
@@ -205,18 +211,21 @@ async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    links = await sync_to_async(
+        lambda: FirstDay.objects.first()
+    )()
     text = (
         "У нас есть каналы коммуникации и база знаний:\n\n"
         "💡 *Основной канал коммуникации* - Телеграм.\n\n"
         "В чаты ниже добавляйся по ссылке (если она есть), в остальные тебя добавит HR и представит команде. \n\n"
         "🔊 *Timepad* - чат, где мы публикуем важные сообщения для команды, поздравляем с ДР, "
         "а также приветствуем новых сотрудников компании! \n\n"
-        "🗓️ [Канал события](https://t.me/+WolmjtALdqw1OGJi) - там мы публикуем новости, "
+        f"🗓️ [Канал события]({links.link_event_group}) - там мы публикуем новости, "
         "анонсы накорпоративные активности и мероприятия. \n\n"
-        "📸 [Offtop Timepad](https://t.me/+OFMRUUKAxRMwNTYy)  - неформальный чат, где делимся своими фото и "
+        f"📸 [Offtop Timepad]({links.link_offtop_timepad})  - неформальный чат, где делимся своими фото и "
         "настроением, а также обсуждаем всё подряд.\n\n"
         "🛒*Барахолка и свопы* — чат для обмена, покупки и продажи ненужных, но хороших вещей. "
-        "Там же устраиваем распродажи офисной техники и т.п. Для входа напиши Паше @woolycrypticboy \n\n"
+        f"Там же устраиваем распродажи офисной техники и т.п. Для входа напиши Паше {links.link_admin} \n\n"
         "P.S. Ещё у тебя будут свои чаты с сотрудниками по отделам. \n\n"
         "P.P.S. Если не получилось войти, напиши Юле в HR и тебя добавят💜"
 
@@ -237,10 +246,13 @@ async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def block_6(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    link_eva = await sync_to_async(
+        lambda: FirstDay.objects.first().link_eva
+    )()
     text = (
         "Для постановки задач мы используем *систему ЕВА. \n\n"
         "* Знакомство с ней пройдёт на велком-встрече и дальше уже в работе. \n\n"
-        "Добавляйся в [чат](https://t.me/+W-2Y9Wxz17c1ODEy), где ты сможешь задать все "
+        f"Добавляйся в [чат]({link_eva}), где ты сможешь задать все "
         "возникающие в работе вопросы по системе ЕВА ⚙️ \n\n"
 
     )
@@ -260,10 +272,13 @@ async def block_6(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logo_link = await sync_to_async(
+        lambda: FirstDay.objects.first().logo_link
+    )()
     text = (
         "Ха-ха, Адам пока в разработке.\n\n"
         "А ещё у нас есть почта. Кстати, не забудь добавить там красивую подпись! \n\n"
-        "Вот здесь можно скачать [лого](https://www.notion.so/timepaddev/463b76b512e045fabce89f471461e733 )"
+        f"Вот здесь можно скачать [лого]({logo_link} )"
     )
     button = "📝, а где созвоны?"
     keyboard = ReplyKeyboardMarkup(
@@ -281,10 +296,13 @@ async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    admin = await sync_to_async(
+        lambda: FirstDay.objects.first().system_admin
+    )()
     text = (
         "Созваниваемся чаще всего в ZOOM, но некоторые команды общаются в Google Meet. \n\n"
         "*P.S.* Если ты вдруг не сможешь зайти в ZOOM, почту или другие ресурсы, или техника будет "
-        "барахлить - тебе поможет наш друг *Паша Флайт @woolycrypticboy. *Он системный администратор "
+        f"барахлить - тебе поможет наш друг *Паша Флайт {admin}. *Он системный администратор "
         "компании, который знает все ответы на технические вопросы ⚙️ 🔧"
     )
     button = "Спасибо за контакт!"
@@ -302,8 +320,11 @@ async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    byod_link = await sync_to_async(
+        lambda: FirstDay.objects.first().link_byod
+    )()
     text = (
-        "Обязательно изучи нашу программу [BYOD](https://telegra.ph/NoutbukiAksessuaryRemontaside-11-25)! "
+        f"Обязательно изучи нашу программу [BYOD]({byod_link})! "
         "Это тебе поможет в работе 💻"
     )
     button = "Здорово, изучу! А что там с доками?"
@@ -322,13 +343,16 @@ async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    links = await sync_to_async(
+        lambda: FirstDay.objects.first()
+    )()
     text = (
-        "📑 За кадровый документооборот у нас отвечает *Аня Саухина.* @Chodarova \n\n"
-        "💳 За зарплату *Настя Шувалова* @pejamko \n\n"
-        "💡Kind reminder:  Всех, кто встречается на твоем пути в этом боте сохраняй в контакты: "
-        "*Фамилия Имя должность/отдел и название компании* \n\n"
-        "Например, Юлия Маликова HR Timepad @malikovaj (делай ТЫК, чтобы ещё раз сохранить котакт Юли). "
-        "Это поможет тебе быстро находить коллег в чатах."
+        f"📑 За кадровый документооборот у нас отвечает *Аня Саухина.* {links.hr_documentation_contact} \n\n"
+        f"💳 За зарплату *Настя Шувалова* {links.payroll_contact} \n\n"
+        f"💡Kind reminder:  Всех, кто встречается на твоем пути в этом боте сохраняй в контакты: "
+        f"*Фамилия Имя должность/отдел и название компании* \n\n"
+        f"Например, Юлия Маликова HR Timepad {links.hr_contact} (делай ТЫК, чтобы ещё раз сохранить котакт Юли). "
+        f"Это поможет тебе быстро находить коллег в чатах."
     )
     button = (
         "Уже в контактах"
@@ -371,6 +395,9 @@ async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_choice = update.message.text
     chat_id = update.effective_chat.id
     user = await get_user_by_chat_id(chat_id)
+    hr_link = await sync_to_async(
+        lambda: FirstDay.objects.first().hr_contact
+    )()
 
     if user_choice == "Трудовой договор":
         user.employment_type = "Трудовой договор"
@@ -385,13 +412,13 @@ async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "*Формула такая:* зарплата / на количество рабочих дней \\* на отработанные дни.\n\n"
             "*Например:* зарплата на руки 120 000. В июле 23 рабочих дня. Отработано 11 дней (с 1 по 15 июля).\n"
             "120 000 / 23 \\* 11 = 57 391. Значит, в зарплату придёт оставшаяся часть = 62 609.\n\n"
-            "📝Если у тебя иная форма взаимодействия с нами, то даты выплат нужно уточнить *у Ани Саухиной* @Chodarova"
+            f"📝Если у тебя иная форма взаимодействия с нами, то даты выплат нужно уточнить *у Ани Саухиной* {hr_link}"
         )
     else:
         user.employment_type = "Иная форма"
         text = (
             "📝 Поскольку у тебя иная форма взаимодействия с нами, даты выплат нужно уточнить "
-            "*у Ани Саухиной* @Chodarova."
+            f"*у Ани Саухиной* {hr_link}."
         )
 
     await save_user(user)
@@ -413,12 +440,15 @@ async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     user = await get_user_by_chat_id(chat_id)
+    link = await sync_to_async(
+        lambda: FirstDay.objects.first().interface_link
+    )()
 
     if user.employment_type == "Трудовой договор":
         text = (
             "У нас есть система кадрового электронного документооборота (сокращенно - *КЭДО*). \n\n"
             "Система, которую мы используем - ТинькоффКЭДО. Для сотрудников "
-            "используется интерфейс - https://work.jump.finance/ \n\n"
+            f"используется интерфейс - {link} \n\n"
             "По всем вопросам о КЭДО можно обратиться к *Анне Саухиной*.\n\n"
             "А тебе в помощь - короткое видео про КЭДО, наслаждайся!"
         )
@@ -479,10 +509,13 @@ async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     else:
         photo_url = "https://disk.yandex.ru/i/INGSewyFoQWJog"
+        link = await sync_to_async(
+            lambda: FirstDay.objects.first().avatar_images_link
+        )()
         text = (
             "😛 Фан-факт: почти все животные — это домашние питомцы наших сотрудников! \n\n"
             "Скачать картинки аватарок можно "
-            "[здесь](https://drive.google.com/drive/u/1/folders/1pbIFVjLK6QOVVXrDh6FcEOss-NJQ4bNC"
+            f"[здесь]({link})"
         )
         keyboard = ReplyKeyboardMarkup(
             [["В отпуске клево!"]],
@@ -524,9 +557,12 @@ async def block_15(update: Update, context: ContextTypes.DEFAULT_TYPE):
             disable_web_page_preview=True
         )
     else:
+        link = await sync_to_async(
+            lambda: FirstDay.objects.first().freelance_vacation
+        )()
         text = (
-            "🏝️ Заходи по [ссылке](https://telegra.ph/Otdyh-vneshtatnyh-rebyat-11-20) и "
-            "читай важную информацию про отпуск!"
+            f"🏝️ Заходи по [ссылке]({link}) и "
+            f"читай важную информацию про отпуск!"
         )
         keyboard = ReplyKeyboardMarkup(
             [["Классно!"]],
@@ -548,10 +584,13 @@ async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if user.employment_type == "Трудовой договор":
         photo_url = "https://disk.yandex.ru/i/INGSewyFoQWJog"
+        link = await sync_to_async(
+            lambda: FirstDay.objects.first().avatar_images_link
+        )()
         text = (
             "😛 Фан-факт: почти все животные — это домашние питомцы наших сотрудников! \n\n"
             "Скачать картинки аватарок можно "
-            "[здесь](https://drive.google.com/drive/u/1/folders/1pbIFVjLK6QOVVXrDh6FcEOss-NJQ4bNC"
+            f"[здесь]({link})"
         )
         keyboard = ReplyKeyboardMarkup(
             [["В отпуске клево!"]],
@@ -590,9 +629,12 @@ async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = await get_user_by_chat_id(chat_id)
 
     if user.employment_type == "Трудовой договор":
+        link = await sync_to_async(
+            lambda: FirstDay.objects.first().vacation_info
+        )()
         text = (
-            "🏝️ Заходи по [ссылке](https://telegra.ph/Otpusk-bolnichnyj-ili-volshebnyj-den-10-29) и "
-            "читай важную информацию про отпуск!"
+            f"🏝️ Заходи по [ссылке]({link}) и "
+            f"читай важную информацию про отпуск!"
         )
         keyboard = ReplyKeyboardMarkup(
             [["Классно!"]],
@@ -606,9 +648,12 @@ async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
             disable_web_page_preview=True
         )
     else:
+        work_reference = await sync_to_async(
+            lambda: FirstDay.objects.first().work_reference_link
+        )()
         text = (
-            "Если тебе нужна справка  с работы - переходи по [ссылке](https://telegra.ph/Spravka-s-raboty-10-29) и "
-            "ты узнаешь как ее получить 🙌")
+            f"Если тебе нужна справка  с работы - переходи по [ссылке]({work_reference}) и "
+            f"ты узнаешь как ее получить 🙌")
         keyboard = ReplyKeyboardMarkup(
             [["Удобно и понятно 😊"]],
             resize_keyboard=True,
@@ -671,9 +716,12 @@ async def block_19(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = await get_user_by_chat_id(chat_id)
 
     if user.employment_type == "Трудовой договор":
+        work_reference = await sync_to_async(
+            lambda: FirstDay.objects.first().work_reference_link
+        )()
         text = (
-            "Если тебе нужна справка  с работы - переходи по [ссылке](https://telegra.ph/Spravka-s-raboty-10-29) и "
-            "ты узнаешь как ее получить 🙌")
+            f"Если тебе нужна справка  с работы - переходи по [ссылке]({work_reference}) и "
+            f"ты узнаешь как ее получить 🙌")
         keyboard = ReplyKeyboardMarkup(
             [["Удобно и понятно 😊"]],
             resize_keyboard=True,

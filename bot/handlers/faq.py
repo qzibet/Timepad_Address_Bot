@@ -6,7 +6,7 @@ from telegram.ext import ContextTypes
 from asgiref.sync import sync_to_async
 from PIL import Image, ImageDraw, ImageFont
 
-from bot.models import Category, FAQ, TelegramUser
+from bot.models import FAQ, TelegramUser
 
 import re
 from html import escape
@@ -31,15 +31,15 @@ def process_text_with_clickable_links(text: str) -> str:
 
 
 async def faq(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [InlineKeyboardButton("К кому обратиться", callback_data="faq_contact")],
-        [InlineKeyboardButton("Кадровые вопросики",
-                              url="https://timepaddev.notion.site/a14985eb1bed48309ef1cb734c951fe7")],
-        [InlineKeyboardButton("Записи корп.встреч",
-                              url="https://drive.google.com/drive/u/1/folders/1USKIBlxairb7cfkqHjvgEUUsNaYEspaE")],
-        [InlineKeyboardButton("Корп. скидки", url="https://telegra.ph/Bonusy-i-partnerskie-skidki-11-14")],
-        [InlineKeyboardButton("Порекомендовать сотрудника", url="https://telegra.ph/Privodi-druga-v-komandu-11-25")],
-    ]
+    faqs = await sync_to_async(lambda: list(FAQ.objects.all()))()
+    keyboard = []
+
+    for faq in faqs:
+        if faq.post:
+            keyboard.append([InlineKeyboardButton(faq.name, url=faq.post)])
+        elif faq.file:
+            keyboard.append([InlineKeyboardButton(faq.name, callback_data=f"faq_file_{faq.id}")])
+
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
@@ -50,10 +50,19 @@ async def faq(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer()  # Чтобы уведомление кнопки не висело
-    await query.message.reply_photo(
-        photo="https://disk.yandex.ru/i/U9tZttrwpzXhpQ",
-    )
+    await query.answer()
+
+    if query.data.startswith("faq_file_"):
+        faq_id = int(query.data.split("_")[-1])
+
+        faq = await sync_to_async(lambda: FAQ.objects.filter(id=faq_id).first())()
+
+        if faq and faq.file:
+            await query.message.reply_photo(
+                photo=faq.file,
+            )
+        else:
+            await query.message.reply_text("Файл не найден.")
 
 
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):

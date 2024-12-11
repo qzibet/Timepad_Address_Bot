@@ -139,6 +139,11 @@ class FirstDay(SingletonModel):
         verbose_name="Ссылка на логотип",
         null=True, blank=True,
     )
+    system_admin = models.CharField(
+        verbose_name="контакт сис.админа",
+        null=True, blank=True, max_length=25,
+        default="@woolycrypticboy"
+    )
     link_byod = models.URLField(
         verbose_name="Ссылка на BYOD",
         null=True, blank=True,

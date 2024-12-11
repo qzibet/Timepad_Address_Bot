@@ -137,6 +137,17 @@ JAZZMIN_SETTINGS = {
     "show_sidebar": True,  # Если хотите показывать боковое меню
     "hide_models": [],
     "recent_actions": False,  # Убирает панель Recent Actions
+    "order_with_respect_to": [
+        "bot.TelegramUser",
+        "bot.Code",
+        "bot.PreonbordingLinks",
+        "bot.FirstDay",
+        "bot.SecondDay",
+        "bot.FourthDay",
+        "bot.MonthHalf",
+        "bot.SecondMonth",
+        "bot.ThirdMonth",
+    ],
 }
 
 # Default primary key field type

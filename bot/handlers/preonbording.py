@@ -11,7 +11,7 @@ import logging
 from bot.handlers import day_of_work
 from bot.handlers.conversations_states import DAY_1, DAY_2
 from bot.handlers.day_of_work import block_0
-from bot.models import TelegramUser, Code
+from bot.models import TelegramUser, Code, PreonbordingLinks
 
 logger = logging.getLogger(__name__)
 
@@ -175,10 +175,12 @@ async def save_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = update.message.text
     chat_id = update.message.chat_id
     await update_user_name(chat_id, name)
-
+    acquaintance_link = await sync_to_async(
+        lambda: PreonbordingLinks.objects.first().acquaintance
+    )()
     text = (
         "Здорово! А теперь давай познакомимся с тобой поближе 😉\n\n"
-        "Заполни, пожалуйста, [анкету](https://docs.google.com/forms/d/e/1FAIpQLSdN7S7zLi6y6iuWiA-xcnX2K0AqnPk_o-6yXVCdauIjyxnp2w/viewform)\n\n"
+        f"Заполни, пожалуйста, [анкету]({acquaintance_link})\n\n"
         "(делай ТЫК на слово анкета) \n\n"
         "*P.S.* Как только пройдешь анкету, снова возвращайся ко мне в бот и нажимай \"Всё готово\".\n\n"
         "*P.P.S.* Не пугайся, если не увидишь по возвращению кнопку - она спряталась в меню рядом с полем для сообщений."
@@ -212,12 +214,14 @@ def update_user_name(chat_id, name):
 
 
 async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    emails = await sync_to_async(
+        lambda: PreonbordingLinks.objects.first().emails
+    )()
     text = (
         "Круто! А теперь немнооооожко бюрократии от нас: \n\n"
         "Отправь пожалуйста, сразу на оба почтовых адреса документы для оформления (Да-да, у нас все официально! "
         "Никаких серых или черных конвертов 😁)\n\n"
-        "*a.saukhina@timepad.ru* \n\n"
-        "*y.volodina@timepad.ru* \n\n"
+        f"*{emails}* \n\n"
         "*Из документов выслать скрины или сканы/фото (все, что есть сейчас):*\n\n"
         "- Паспорт (1 и 2 стр);\n\n"
         "- Трудовую книжку или сведения о трудовой деятельности (как раз ту самую выписку из электронной "
@@ -350,10 +354,13 @@ async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     if user.work_type == 'Офис':
+        address = await sync_to_async(
+            lambda: PreonbordingLinks.objects.first().address
+        )()
         text = (
             "Круто! Тогда лови наш адрес и видео-путеводитель, чтобы добраться до нас от метро Тульская (2 выход)!\n\n"
             "*Адрес: Холодильный пер. 3, офис 325* \n\n"
-            "Мы находимся в [Товариществе Рябовской мануфактуры](https://yandex.ru/maps/org/tovarishchestvo_ryabovskoy_manufaktury/48085992655/?ll=37.626809%2C55.708945&z=14 ) "
+            f"Мы находимся в [Товариществе Рябовской мануфактуры]({address}) "
             "Наше здание - *ГОНЧАР*. \n\n"
             "*Если ты на машине:* рядом с нами есть бесплатные парковки, а на территории самой мануфактуры - платные."
         )
