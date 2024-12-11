@@ -11,7 +11,7 @@ from bot.handlers.conversations_states import MONTH_1, MONTH_2
 from bot.models import TelegramUser
 
 logger = logging.getLogger(__name__)
-IVAN_SECRET_PASSWORD = os.getenv("IVAN_SECRET_PASSWORD")
+MONTH_SECRET_PASSWORD = os.getenv("MONTH_SECRET_PASSWORD")
 
 
 async def get_user_by_chat_id(chat_id):
@@ -83,7 +83,7 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
         password = update.message.text
         print(password)
 
-        if password == IVAN_SECRET_PASSWORD:
+        if password == MONTH_SECRET_PASSWORD:
             photo_url = os.path.join(settings.MEDIA_ROOT, "10sticker.webp")
             text = "Лови *10 таймпадиков!* И успехов в адаптации! 🍀"
             await update.message.reply_sticker(
