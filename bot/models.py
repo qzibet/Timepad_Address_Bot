@@ -334,7 +334,7 @@ class FourthDay(SingletonModel):
 
 class MonthHalf(SingletonModel):
     survey_link = models.URLField(
-        verbose_name="Ссылка на ДМС",
+        verbose_name="Ссылка на анкету",
         default="https://docs.google.com/forms/d/e/1FAIpQLScEQfKbumuqSd_3DeR1WDtQJUt5fYvUQEnGFJWgqXLmm9MLyQ/viewform",
     )
 
@@ -348,7 +348,7 @@ class MonthHalf(SingletonModel):
 
 class SecondMonth(SingletonModel):
     hr_link = models.URLField(
-        verbose_name="Ссылка на ДМС",
+        verbose_name="Ссылка на встречу",
         default="https://us02web.zoom.us/j/86826507585?pwd=qmo2josZPIVmEJzV8cnrd3FRKlIjl7.1",
     )
 
@@ -362,7 +362,7 @@ class SecondMonth(SingletonModel):
 
 class ThirdMonth(SingletonModel):
     meet_link = models.URLField(
-        verbose_name="Ссылка на ДМС",
+        verbose_name="Ссылка на встречу",
         default="https://docs.google.com/forms/d/e/1FAIpQLSf1X3GgiJ2x8-x-XXVearUhGp5tTYkX-_bI7hQX7OBCOzh4Qg/viewform",
     )
 
