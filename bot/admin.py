@@ -6,7 +6,7 @@ from bot.models import (
     PreonbordingLinks,
     FirstDay, SecondDay,
     FourthDay, MonthHalf,
-    ThirdMonth, SecondMonth
+    ThirdMonth, SecondMonth, UserConversationState
 )
 from django.contrib.auth.models import Group, User
 from django.contrib.admin.models import LogEntry
@@ -59,5 +59,3 @@ admin.site.unregister(User)
 admin.site.register(TelegramUser)
 admin.site.register(Code)
 admin.site.register(FAQ)
-
-

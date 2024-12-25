@@ -1,10 +1,11 @@
 import os
-from datetime import date
+from datetime import date, timedelta, datetime, time
 
+import pytz
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, ConversationHandler
 from asgiref.sync import sync_to_async
 import logging
 
@@ -20,6 +21,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.username or "Неизвестно"
     chat_id = update.effective_chat.id
     user = await sync_to_async(TelegramUser.objects.filter(chat_id=chat_id).first)()
+    context.user_data['chat_id'] = update.effective_chat.id
 
     welcome_text = (
         "Привет! Я твой друг *Таймпадрес-бот*! Рады, что ты совсем скоро "
@@ -406,5 +408,4 @@ async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="Markdown",
         reply_markup=empty_keyboard
     )
-    await block_0(update, context)
-    return DAY_2[0]
+    return ConversationHandler.END

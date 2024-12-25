@@ -1,17 +1,16 @@
 import os
 
+from asgiref.sync import sync_to_async
 from django.conf import settings
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import ContextTypes
 import logging
-
-from bot.handlers import month_1
 from bot.handlers.conversations_states import DAY_6, MONTH_1
+from bot.models import TelegramUser
 
 logger = logging.getLogger(__name__)
 
 
-async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_0(chat_id, context):
     text = (
         "Привет! А вот и пролетели первые 5 рабочих дней!\n\n"
         "Мы все втроем - Таймпадрес, Таймика и Мастер Винтиков - очень рады были с тобой провести это время! \n\n"
@@ -25,17 +24,19 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
     photo_url = os.path.join(settings.MEDIA_ROOT, "5daysticker.webp")
-    await update.message.reply_sticker(
+    await context.bot.send_sticker(
+        chat_id=chat_id,
         sticker=open(photo_url, 'rb'),
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
     )
     return DAY_6[0]
 
 
-async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_1(chat_id, context):
     text = (
         "Пора тебе представить еще одного помощника, уже не виртуального 😉. \n\n"
         "Сегодня познакомим тебя с Бадди!"
@@ -47,14 +48,15 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
     )
     return DAY_6[1]
 
 
-async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_2(chat_id, context):
     text = (
         "*Бадди = друг, товарищ*🫱🏼‍🫲🏻 \n\n"
         "Который помогает новичкам адаптироваться в коллективе. \n\n"
@@ -77,7 +79,8 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -86,10 +89,13 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_6[2]
 
 
-async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_3(chat_id, context):
+    link = await sync_to_async(
+        lambda: TelegramUser.objects.first().buddy
+    )()
     text = (
-        "А вот и контакт твоего Бадди. Можешь написать ему или подождать, пока он с тобой свяжется 🤗 \n\n"
-        "@fruktstyle"
+        f"А вот и контакт твоего Бадди. Можешь написать ему или подождать, пока он с тобой свяжется 🤗 \n\n"
+        f"{link}"
     )
     button = "Спасибо за контакт!"
 
@@ -98,7 +104,8 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -106,7 +113,7 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_6[3]
 
 
-async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_4(chat_id, context):
     text_2 = (
         "Ну что же, еще раз поздравляем тебя с первой рабочей неделей! \n\n"
         "Успехов тебе! И если нужна информация, заходи сюда и пользуйся Базой знаний "
@@ -115,13 +122,14 @@ async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     button = ReplyKeyboardRemove()
     photo_url = os.path.join(settings.MEDIA_ROOT, "heartsticker.webp")
-    await update.message.reply_sticker(
+    await context.bot.send_sticker(
+        chat_id=chat_id,
         sticker=open(photo_url, 'rb'),
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text_2,
         reply_markup=button,
         parse_mode="Markdown",
     )
-    await month_1.block_0(update, context)
-    return MONTH_1[0]
+

@@ -1,15 +1,19 @@
 import asyncio
+import datetime
 import logging
 import os
 
+import pytz
 from asgiref.sync import sync_to_async
 
 from bot.handlers.conversations_states import DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6, MONTH_1, MONTH_2, MONTH_3
 from bot.handlers import preonbording, day_of_work, day_2, day_3, day_4, day_5, month_1, month_2, month_3
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ConversationHandler, JobQueue, \
     CallbackQueryHandler
+
 from bot.handlers.faq import faq, handle_callback_query, support, wallet
-from bot.models import Code
+from bot.jobs.main import daily_alarm, handle_user_response
+from bot.models import Code, TelegramUser
 
 logger = logging.getLogger(__name__)
 
@@ -25,10 +29,15 @@ class TelegramBot:
         self.job_queue.set_application(self.application)
         await self.job_queue.start()
         await self.add_handlers()
+        self.register_daily_alarm()
+        message_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, handle_user_response)
+
+        self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_user_response))
+        self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_user_response))
 
     async def add_handlers(self):
         conversation_handler = ConversationHandler(
-            entry_points=[CommandHandler("start", month_2.block_0)],  # Обработчик для команды /start
+            entry_points=[CommandHandler("start", preonbording.start)],  # Обработчик для команды /start
             states={
                 DAY_1[0]: [MessageHandler(filters.Regex("^Юхуу, погнали$") & ~filters.COMMAND, preonbording.ask_for_code)],
                 DAY_1[1]: [MessageHandler(filters.TEXT & ~filters.COMMAND, preonbording.request_access_code)],
@@ -129,38 +138,27 @@ class TelegramBot:
         self.application.add_handler(CommandHandler("wallet", wallet))
 
         self.application.add_handler(CallbackQueryHandler(handle_callback_query))  # Обработчик для кнопок
-        #
-        # await self.schedule_daily_tasks()
 
     @sync_to_async
     def get_user_code(self, user_id):
         return Code.objects.filter(user__chat_id=user_id).first()
 
-    # async def schedule_daily_tasks(self):
-    #     codes = await sync_to_async(list)(
-    #         Code.objects.filter(start_date__isnull=False)
-    #     )
-    #
-    #     for code in codes:
-    #         start_time = make_aware(
-    #             datetime.combine(
-    #                 code.start_date, time(10, 0)
-    #             )
-    #         )
-    #         current_time = make_aware(datetime.now())
-    #
-    #         if start_time > current_time:
-    #             self.job_queue.run_once(
-    #                 self.start_day_2,
-    #                 when=(start_time - current_time).total_seconds(),
-    #                 data=code.user
-    #             )
-
+    def register_daily_alarm(self):
+        self.job_queue.run_daily(
+            daily_alarm,
+            time=datetime.time(
+                hour=15,
+                minute=17,
+                tzinfo=pytz.timezone("Europe/Moscow"),
+            ),
+            days=(0, 1, 2, 3, 4)
+        )
+        print("зареган")
 
     def run(self):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
         loop.run_until_complete(self.initialize_bot())
-        self.application.run_polling(timeout=60)
+        self.application.run_polling(timeout=120)
 

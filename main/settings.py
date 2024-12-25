@@ -59,18 +59,19 @@ ROOT_URLCONF = 'main.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [BASE_DIR / "templates"],  # Путь к папке с шаблонами
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'main.wsgi.application'
 
@@ -137,6 +138,7 @@ JAZZMIN_SETTINGS = {
     "show_sidebar": True,  # Если хотите показывать боковое меню
     "hide_models": [],
     "recent_actions": False,  # Убирает панель Recent Actions
+    "show_recent": False,
     "order_with_respect_to": [
         "bot.TelegramUser",
         "bot.Code",

@@ -2,7 +2,7 @@ import os
 
 from asgiref.sync import sync_to_async
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CallbackContext, ConversationHandler
 import logging
 
 from bot.handlers import day_5
@@ -14,15 +14,16 @@ logger = logging.getLogger(__name__)
 IVAN_SECRET_PASSWORD = os.getenv("IVAN_SECRET_PASSWORD")
 
 
-async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_0(chat_id, context):
     text = (
         "Доброе утро! \n\n"
         "Начинаем день с зарядки и... разговора о корпоративных плюшках и всяких приколюхах! \n\n"
         "Расскажем тебе о наших корпоративах и мероприятиях, а \"на десерт\" - ДМС!"
     )
     photo_url = os.path.join(settings.MEDIA_ROOT, "healthsticker.webp")
-    await update.message.reply_sticker(
+    await context.bot.send_sticker(
         sticker=open(photo_url, 'rb'),
+        chat_id=chat_id
     )
     button = "🚀🚀🚀"
 
@@ -32,17 +33,18 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
     )
     return DAY_5[0]
 
 
-async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_1(chat_id, context):
     discounts_link = await sync_to_async(
         lambda: FourthDay.objects.first().corporate_discounts_link
-    )
+    )()
     text = (
         f"Начнем с корпоративных скидок (от нас и наших компаний-друзей)! \n\n"
         f"[Жми сюда]({discounts_link})"
@@ -55,7 +57,8 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -64,10 +67,10 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_5[1]
 
 
-async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_2(chat_id, context):
     form_link = await sync_to_async(
         lambda: FourthDay.objects.first().birthday_form_link
-    )
+    )()
     text_1 = (
         f"А еще мы любим поздравлять сотрудников с *ДНЕМ РОЖДЕНИЯ!* 🎂 \n\n"
         f"Заполни [форму]({form_link}), "
@@ -82,10 +85,12 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_sticker(
+    await context.bot.send_sticker(
+        chat_id=chat_id,
         sticker=open(photo_url, 'rb'),
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text_1,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -102,7 +107,7 @@ async def save_user(user):
     await sync_to_async(user.save)()
 
 
-async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_3(chat_id, context):
     text = (
         "Лови видео, которое сделала наша сотрудница *Вика Литвинова @vi\\_litvinova* "
         "\\(аккаунт\\-менеджер отдела развития\\), вдохновившись нашим летним корпоративом в стиле детского лагеря\\!"
@@ -114,7 +119,8 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="MarkdownV2",
@@ -122,7 +128,7 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_5[3]
 
 
-async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_4(chat_id, context):
     button = "Круто! Хочу также!"
     keyboard = ReplyKeyboardMarkup(
         [[button]],
@@ -130,7 +136,8 @@ async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    message = await update.message.reply_video(
+    message = await context.bot.send_video(
+        chat_id=chat_id,
         video="BAACAgIAAxkBAAIocWdPgWVjk6gBB08taBr7isdeom_3AAKzcQACD5l4Slvj5v-vJSKhNgQ",
         reply_markup=keyboard,
         read_timeout=120,
@@ -144,7 +151,7 @@ async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_5[4]
 
 
-async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_5(chat_id, context):
     text = (
         "Но это не всё! У нас есть ещё и другие мероприятия ✨\n\n"
     )
@@ -155,14 +162,15 @@ async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard
     )
     return DAY_5[5]
 
 
-async def block_6(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_6(chat_id, context):
     text = (
         "*Наши мероприятия* \n\n"
         "🍻 *Активности:* собираемся вместе и во что-то играем, смотрим кино, пьем винишко и т.п. \n\n"
@@ -179,7 +187,8 @@ async def block_6(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -187,7 +196,7 @@ async def block_6(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_5[6]
 
 
-async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_7(chat_id, context):
     text = (
         "А теперь небольшая [анкета](https://docs.google.com/forms/d/e/1FAIpQLSfw1RFDwUod-F868-9MzN9VuJ-8CVD9T---I-RW_-ue5C6WuA/viewform), "
         "чтобы мы лучше узнали тебя и твои увлечения 🎫 \n\n"
@@ -200,7 +209,8 @@ async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True,
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -208,8 +218,7 @@ async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_5[7]
 
 
-async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id
+async def block_8(chat_id, context):
     user = await get_user_by_chat_id(chat_id)
     user.timepad += 10
     await save_user(user)
@@ -220,13 +229,15 @@ async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     button = ReplyKeyboardRemove()
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=button
     )
     photo_url = os.path.join(settings.MEDIA_ROOT, "10sticker.webp")
-    await update.message.reply_sticker(
+    await context.bot.send_sticker(
+        chat_id=chat_id,
         sticker=open(photo_url, 'rb'),
     )
 
@@ -234,9 +245,9 @@ async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_5[8]
 
 
-async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_9(chat_id, context):
     if context.user_data.get('awaiting_password', False):
-        password = update.message.text
+        password = context.user_data.get('last_response')
         print(password)
 
         if password == IVAN_SECRET_PASSWORD:
@@ -258,8 +269,10 @@ async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "🫣 только тсссс, пароль для входа: `timepad_friends` \n\n"
                 "За регистрацию в Random coffee тебе также упадет *10 таймпадиков!*"
             )
-            await update.message.reply_text(text=text, parse_mode="Markdown")
-            await update.message.reply_text("Как пройдешь регистрацию - возвращайся ко мне!")
+            await context.bot.send_message(
+                chat_id=chat_id, text=text, parse_mode="Markdown")
+            await context.bot.send_message(
+                chat_id=chat_id, text="Как пройдешь регистрацию - возвращайся ко мне!")
             button_1 = "РЕГИСТРАЦИЯ ПРОЙДЕНА, жду новые знакомства! ☕️"
             button_2 = "Пока подумаю!"
             keyboard = ReplyKeyboardMarkup(
@@ -268,18 +281,21 @@ async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 one_time_keyboard=True
             )
 
-            await update.message.reply_text(
-                "Прошел регистрацию?",
+            await context.bot.send_message(
+                chat_id=chat_id,
+                text="Прошел регистрацию?",
                 reply_markup=keyboard,
             )
             return DAY_5[9]
         else:
-            await update.message.reply_text("Пароль неверный 😓 попробуй ещё раз!")
+            await context.bot.send_message(
+                chat_id=chat_id, text="Пароль неверный 😓 попробуй ещё раз!")
             return DAY_5[8]
 
 
-async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    response = update.message.text
+async def block_10(chat_id, context):
+    response = context.user_data.get('last_response')
+
     print(response)
     button = "Посмотрю 😇"
     keyboard = ReplyKeyboardMarkup(
@@ -293,21 +309,23 @@ async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Будет здорово, если ты станешь частью этого сообщества 🥺 НО, если пока не хочешь, то погнали дальше!"
         )
     else:
-        chat_id = update.effective_chat.id
         user = await get_user_by_chat_id(chat_id)
         user.timepad += 10
         await save_user(user)
         text = "Ну, тогда погнали дальше!"
         photo_url = os.path.join(settings.MEDIA_ROOT, "10sticker.webp")
-        await update.message.reply_sticker(
+        await context.bot.send_sticker(
+            chat_id=chat_id,
             sticker=open(photo_url, 'rb'),
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text="Лови 10 таймпадиков за подписку",
             reply_markup=keyboard,
         )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard
@@ -319,7 +337,8 @@ async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🎯 [Записи и презентации мероприятий](https://www.notion.so/42d7ebd5335844e2afacbb1c6f0c061a?pvs=21) \n\n"
         "🎯 [Корпоративные мероприятия](https://www.notion.so/4c1bcbf52bef458c8b5af800e94c8871?pvs=2)"
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=big_text,
         parse_mode="Markdown",
         reply_markup=keyboard
@@ -327,7 +346,7 @@ async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_5[10]
 
 
-async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_11(chat_id, context):
     text = (
         "Ещё у нас есть *разные чаты по интересам!* \n\n"
         "Вступать во все не нужно 😅, а *только по желанию!*"
@@ -338,7 +357,8 @@ async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard
@@ -346,7 +366,7 @@ async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_5[11]
 
 
-async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_12(chat_id, context):
     text = (
         "*Выбирай:* \n\n"
         "- [Каток](https://t.me/+x2m0Ry7AU3cwODEy) - зимой стараемся выбираться на каток всей командой\n\n"
@@ -360,7 +380,8 @@ async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -369,7 +390,7 @@ async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_5[12]
 
 
-async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_13(chat_id, context):
     text = (
         "Да-да, как и обещали вот информация про [ДМС](https://timepaddev.notion.site) (ТЫК на слово ДМС). \n\n"
     )
@@ -378,7 +399,8 @@ async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -387,17 +409,19 @@ async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_5[13]
 
 
-async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_14(chat_id, context):
     button = ReplyKeyboardRemove()
     photo_url = os.path.join(settings.MEDIA_ROOT, "byesticker.webp")
-    await update.message.reply_sticker(
+    await context.bot.send_sticker(
+        chat_id=chat_id,
         sticker=open(photo_url, 'rb'),
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text="Круто поболтали! Пока-пока, и до завтра!",
         reply_markup=button,
     )
-    await day_5.block_0(update, context)
-    return DAY_6[0]
+    return ConversationHandler.END
+
 
 

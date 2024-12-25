@@ -10,7 +10,7 @@ from bot.models import TelegramUser
 logger = logging.getLogger(__name__)
 
 
-async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_0(chat_id, context):
     text = (
         "Привет! А вот и я😎 твой Таймпадрес! Уже 2 месяца, как ты с нами! Круто же?"
     )
@@ -23,7 +23,8 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -31,13 +32,7 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return MONTH_2[0]
 
 
-async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    response = update.message.text
-    print(response)
-    chat_id = update.effective_chat.id
-    user = await get_user_by_chat_id(chat_id)
-    user.mood_second_month = response
-    await save_user(user)
+async def block_1(chat_id, context):
     text = "Как настроение?"
     button_1 = "Все прекрасно!"
     button_2 = "Норм"
@@ -48,7 +43,8 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -64,8 +60,8 @@ async def save_user(user):
     await sync_to_async(user.save)()
 
 
-async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    response = update.message.text
+async def block_2(chat_id, context):
+    response = context.user_data.get('last_response')
 
     if response in ["Все прекрасно!", "Норм"]:  # Исправлено на проверку вхождения строки
         text = (
@@ -76,7 +72,8 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             reply_markup=button,
             parse_mode="Markdown",
@@ -92,7 +89,8 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             reply_markup=button,
             parse_mode="Markdown",
@@ -100,7 +98,7 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return MONTH_2[2]
 
 
-async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_3(chat_id, context):
     text = (
         "Я слышал, что скоро у тебя встреча с HR. [Ссылка](https://us02web.zoom.us/j/86826507585?pwd=qmo2josZPIVmEJzV8cnrd3FRKlIjl7.1) "
         "в твоем календаре! Приходи в назначенное время 🙂"
@@ -110,7 +108,8 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=button,
@@ -119,15 +118,15 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return MONTH_2[3]
 
 
-async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_4(chat_id, context):
     text = (
         "Супер! Желаю тебе продуктивного дня! До встречи! 😘"
     )
     button = ReplyKeyboardRemove()
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=button,
         parse_mode="Markdown",
     )
-    await month_3.block_0(update, context)
-    return MONTH_3[0]
+

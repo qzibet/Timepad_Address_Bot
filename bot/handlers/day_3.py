@@ -11,7 +11,7 @@ from bot.handlers.conversations_states import DAY_4, DAY_5
 logger = logging.getLogger(__name__)
 
 
-async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_0(chat_id, context):
     text = ("Прием-прием! С тобой Таймика. Как твое настроение?")
     button_1 = "Супер!"
     button_2 = "Хорошее"
@@ -23,14 +23,15 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
     )
     return DAY_4[0]
 
 
-async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_1(chat_id, context):
     text = (
         "Спасибо за искренность! \n\n"
         "Еще у нас принято хвалить коллег и давать обратную связь! 🤩 \n\n"
@@ -38,7 +39,8 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "А также проводим два больших опроса в год (в апреле и октябре), где изучаем \"Счастье сотрудников\" 💜"
     )
     photo_url = os.path.join(settings.MEDIA_ROOT, "likesticker.webp")
-    await update.message.reply_sticker(
+    await context.bot.send_sticker(
+        chat_id=chat_id,
         sticker=open(photo_url, 'rb'),
     )
     button = "Как интересно!"
@@ -48,7 +50,8 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard
@@ -56,24 +59,7 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_4[1]
 
 
-# async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
-#     text = (
-#         "здесь ИНФА про  сервис и регистрация!"
-#     )
-#     button = "Теперь буду использовать 👍"
-#     keyboard = ReplyKeyboardMarkup(
-#         [[button]],
-#         resize_keyboard=True,
-#         one_time_keyboard=True
-#     )
-#     await update.message.reply_text(
-#         text=text,
-#         reply_markup=keyboard,
-#     )
-#     return DAY_4[2]
-
-
-async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_2(chat_id, context):
     text = (
         "А вот результат последнего исследования, где наш *eNPS* равен *78%*. \n\n"
         "*📝 eNPS - Employee Net Promoter Score или Индекс лояльности сотрудников.* \n\n"
@@ -88,7 +74,8 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -96,7 +83,7 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_4[2]
 
 
-async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_3(chat_id, context):
     text = (
         "Конечно, мы будем очень рады, если и ты примешь участие и поможешь нам становиться лучше и лучше 🤗 "
     )
@@ -107,14 +94,15 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
     )
     return DAY_4[3]
 
 
-async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_4(chat_id, context):
     text = (
         "Супер! На сегодня это все! 🤓\n\n"
         "С тобой было очень приятно и тепло! Увидимся завтра! 🧡"
@@ -122,9 +110,9 @@ async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     button = ReplyKeyboardRemove()
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=button
     )
-    await day_4.block_0(update, context)
-    return DAY_5[0]
+

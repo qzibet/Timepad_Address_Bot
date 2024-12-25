@@ -47,6 +47,13 @@ class TelegramUser(models.Model):
         verbose_name="Бадди",
         null=True, blank=True
     )
+    emodji = models.CharField(
+        max_length=50,
+        verbose_name="описывает твои идеальные выходные",
+        null=True, blank=True
+    )
+    current_day = models.IntegerField(default=1)  # Текущий день
+    current_block = models.IntegerField(default=1)  # Текущий блок
 
     def __str__(self):
         return self.username
@@ -374,6 +381,11 @@ class ThirdMonth(SingletonModel):
         abstract = False
 
 
+class UserConversationState(models.Model):
+    user = models.OneToOneField(TelegramUser, on_delete=models.CASCADE)
+    chat_id = models.BigIntegerField(unique=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-
-
+    def __str__(self):
+        return f"{self.user.username} - {self.state}"

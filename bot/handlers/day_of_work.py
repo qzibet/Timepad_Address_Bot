@@ -2,7 +2,7 @@ import os
 
 from django.conf import settings
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, ConversationHandler
 from asgiref.sync import sync_to_async
 import logging
 
@@ -21,8 +21,7 @@ async def save_user(user):
     await sync_to_async(user.save)()
 
 
-async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.message.chat_id
+async def block_0(chat_id, context):
     user = await sync_to_async(TelegramUser.objects.get)(chat_id=chat_id)
     photo_url = os.path.join(settings.MEDIA_ROOT, "heysticker.webp")
     video = os.path.join(settings.MEDIA_ROOT, "Ценности и Миссия  (1).mp4")
@@ -40,10 +39,12 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_sticker(
+        await context.bot.send_sticker(
             sticker=open(photo_url, 'rb'),
+            chat_id=chat_id
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard
@@ -68,11 +69,11 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         )
 
-        await update.message.reply_sticker(
+        await context.bot.send_sticker(
             sticker=open(photo_url, 'rb'),
         )
 
-        await update.message.reply_text(
+        await context.bot.send_message(
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard,
@@ -83,8 +84,7 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return DAY_2[0]
 
 
-async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.message.chat_id
+async def block_1(chat_id, context):
     user = await sync_to_async(TelegramUser.objects.get)(chat_id=chat_id)
     button = "Вдохновляет!"
     keyboard = ReplyKeyboardMarkup(
@@ -105,7 +105,8 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Я помогу тебе с пользой провести время до нашей встречи: "
             "давай погрузимся в мир наших ценностей и миссии! 😉"
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             reply_markup=keyboard,
             text=text,
         )
@@ -119,7 +120,7 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[1]
 
 
-async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_2(chat_id, context):
     text = (
         "Итак: **Наша миссия** \n\n"
         "Мы поддерживаем увлечения, чтобы раскрывался потенциал и новые возможности \n\n"
@@ -138,7 +139,8 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -146,8 +148,7 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[2]
 
 
-async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.message.chat_id
+async def block_3(chat_id, context):
     user = await sync_to_async(TelegramUser.objects.get)(chat_id=chat_id)
     if user.work_type == 'Офис':
         text = (
@@ -170,7 +171,8 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -179,16 +181,18 @@ async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[3]
 
 
-async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_4(chat_id, context):
     photo_url = os.path.join(settings.MEDIA_ROOT, "docsticker.webp")
     text = (
         "Привет-привет, это Таймпадрес-бот! 📻 \n\n"
         "Дальше мы пройдемся с тобой по организационным моментикам 📋."
     )
-    await update.message.reply_sticker(
+    await context.bot.send_sticker(
+        chat_id=chat_id,
         sticker=open(photo_url, 'rb'),
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
     )
@@ -202,7 +206,8 @@ async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text_2,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -210,7 +215,7 @@ async def block_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[4]
 
 
-async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_5(chat_id, context):
     links = await sync_to_async(
         lambda: FirstDay.objects.first()
     )()
@@ -236,7 +241,8 @@ async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -245,7 +251,7 @@ async def block_5(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[5]
 
 
-async def block_6(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_6(chat_id, context):
     link_eva = await sync_to_async(
         lambda: FirstDay.objects.first().link_eva
     )()
@@ -262,7 +268,8 @@ async def block_6(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -271,7 +278,7 @@ async def block_6(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[6]
 
 
-async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_7(chat_id, context):
     logo_link = await sync_to_async(
         lambda: FirstDay.objects.first().logo_link
     )()
@@ -286,7 +293,8 @@ async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -295,7 +303,7 @@ async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[7]
 
 
-async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_8(chat_id, context):
     admin = await sync_to_async(
         lambda: FirstDay.objects.first().system_admin
     )()
@@ -311,7 +319,8 @@ async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -319,7 +328,7 @@ async def block_8(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[8]
 
 
-async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_9(chat_id, context):
     byod_link = await sync_to_async(
         lambda: FirstDay.objects.first().link_byod
     )()
@@ -333,7 +342,8 @@ async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -342,7 +352,7 @@ async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[9]
 
 
-async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_10(chat_id, context):
     links = await sync_to_async(
         lambda: FirstDay.objects.first()
     )()
@@ -362,7 +372,8 @@ async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -370,7 +381,7 @@ async def block_10(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[10]
 
 
-async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_11(chat_id, context):
     button_1 = "Трудовой договор"
     button_2 = "Иная форма"
     keyboard = ReplyKeyboardMarkup(
@@ -383,7 +394,8 @@ async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "работа *по трудовому договору**  или **иная форма* (сюда входят - самозанятость, ИП и "
         "договор ГПХ)."
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -391,9 +403,9 @@ async def block_11(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[11]
 
 
-async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_choice = update.message.text
-    chat_id = update.effective_chat.id
+async def block_12(chat_id, context):
+    user = await sync_to_async(lambda: TelegramUser.objects.get(chat_id=chat_id))()
+    user_choice = user.employment_type
     user = await get_user_by_chat_id(chat_id)
     hr_link = await sync_to_async(
         lambda: FirstDay.objects.first().hr_contact
@@ -429,7 +441,8 @@ async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=keyboard,
@@ -437,8 +450,7 @@ async def block_12(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[12]
 
 
-async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id
+async def block_13(chat_id, context):
     user = await get_user_by_chat_id(chat_id)
     link = await sync_to_async(
         lambda: FirstDay.objects.first().interface_link
@@ -458,7 +470,8 @@ async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard,
@@ -479,7 +492,8 @@ async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard,
@@ -489,8 +503,7 @@ async def block_13(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[13]
 
 
-async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id
+async def block_14(chat_id, context):
     user = await get_user_by_chat_id(chat_id)
 
     if user.employment_type == "Трудовой договор":
@@ -502,7 +515,8 @@ async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_video(
+        await context.bot.send_video(
+            chat_id=chat_id,
             video="BAACAgIAAxkBAAIYj2c6fOSdrqhTWMmRRzNDDi-TZ1CfAAL2aAACoAjRSRIpjvM5t642NgQ",
             parse_mode="Markdown",
             reply_markup=keyboard
@@ -522,7 +536,8 @@ async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_photo(
+        await context.bot.send_photo(
+            chat_id=chat_id,
             photo=photo_url,
             caption=text,
             parse_mode="Markdown",
@@ -531,8 +546,7 @@ async def block_14(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[14]
 
 
-async def block_15(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id
+async def block_15(chat_id, context):
     user = await get_user_by_chat_id(chat_id)
 
     if user.employment_type == "Трудовой договор":
@@ -550,7 +564,8 @@ async def block_15(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard,
@@ -569,7 +584,8 @@ async def block_15(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard,
@@ -578,8 +594,7 @@ async def block_15(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[15]
 
 
-async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id
+async def block_16(chat_id, context):
     user = await get_user_by_chat_id(chat_id)
 
     if user.employment_type == "Трудовой договор":
@@ -597,7 +612,8 @@ async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_photo(
+        await context.bot.send_photo(
+            chat_id=chat_id,
             photo=photo_url,
             caption=text,
             parse_mode="Markdown",
@@ -614,7 +630,8 @@ async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard,
@@ -624,8 +641,7 @@ async def block_16(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[16]
 
 
-async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id
+async def block_17(chat_id, context):
     user = await get_user_by_chat_id(chat_id)
 
     if user.employment_type == "Трудовой договор":
@@ -641,7 +657,8 @@ async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard,
@@ -659,7 +676,8 @@ async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard,
@@ -668,8 +686,7 @@ async def block_17(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[17]
 
 
-async def block_18(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id
+async def block_18(chat_id, context):
     user = await get_user_by_chat_id(chat_id)
 
     if user.employment_type == "Трудовой договор":
@@ -683,7 +700,8 @@ async def block_18(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard,
@@ -691,28 +709,29 @@ async def block_18(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     else:
         photo_url = os.path.join(settings.MEDIA_ROOT, "laptopsticker.webp")
-        await update.message.reply_sticker(
+        await context.bot.send_sticker(
             sticker=open(photo_url, 'rb'),
+            chat_id=chat_id
         )
         text = (
             "Ух! Много информации сразу, понимаю. \n\n"
             "Поэтому продолжим завтра. А пока погружайся в  рабочий процесс, знакомься с коллегами и руководителем! 🗂️"
         )
         button = ReplyKeyboardRemove()
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=button,
         )
-        await day_2.block_0(update, context)
-        return DAY_3[0]
+        return ConversationHandler.END
+        # return DAY_3[0]
 
     return DAY_2[18]
 
 
-async def block_19(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_19(chat_id, context):
     photo_url = os.path.join(settings.MEDIA_ROOT, "laptopsticker.webp")
-    chat_id = update.effective_chat.id
     user = await get_user_by_chat_id(chat_id)
 
     if user.employment_type == "Трудовой договор":
@@ -727,7 +746,8 @@ async def block_19(update: Update, context: ContextTypes.DEFAULT_TYPE):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=keyboard,
@@ -738,26 +758,25 @@ async def block_19(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return DAY_2[19]
 
 
-async def block_20(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_20(chat_id, context):
     photo_url = os.path.join(settings.MEDIA_ROOT, "laptopsticker.webp")
-    chat_id = update.effective_chat.id
     user = await get_user_by_chat_id(chat_id)
 
     if user.employment_type == "Трудовой договор":
-        await update.message.reply_sticker(
+        await context.bot.send_sticker(
             sticker=open(photo_url, 'rb'),
+            chat_id=chat_id
         )
         text = (
             "Ух! Много информации сразу, понимаю. \n\n"
             "Поэтому продолжим завтра. А пока погружайся в  рабочий процесс, знакомься с коллегами и руководителем! 🗂️"
         )
         button = ReplyKeyboardRemove()
-        await update.message.reply_text(
+        await context.bot.send_message(
+            chat_id=chat_id,
             text=text,
             parse_mode="Markdown",
             reply_markup=button,
         )
-        await day_2.block_0(update, context)
     else:
         pass
-    return DAY_3[0]

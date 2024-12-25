@@ -22,7 +22,7 @@ async def save_user(user):
     await sync_to_async(user.save)()
 
 
-async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_0(chat_id, context):
     text = (
         "Привет!  Это  Таймпадрес, твой давний друг! Давно мы с тобой не общались. "
         "Хочу узнать, как у тебя дела 😉"
@@ -36,7 +36,8 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
         one_time_keyboard=True
     )
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -44,7 +45,7 @@ async def block_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return MONTH_1[0]
 
 
-async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_1(chat_id, context):
     text = (
         "Заполни, пожалуйста, короткую [анкету](https://docs.google.com/forms/d/e/1FAIpQLScEQfKbumuqSd_3DeR1WDtQJUt5fYvUQEnGFJWgqXLmm9MLyQ/viewform) о том, как "
         "проходит твой адаптационный период.(ТЫК на слово \"анкета\") \n\n"
@@ -56,7 +57,8 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         reply_markup=keyboard,
         parse_mode="Markdown",
@@ -64,11 +66,12 @@ async def block_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return MONTH_1[1]
 
 
-async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_2(chat_id, context):
     text = "Супер! Напиши кодовое слово😉"
     button = ReplyKeyboardRemove()
 
-    await update.message.reply_text(
+    await context.bot.send_message(
+        chat_id=chat_id,
         text=text,
         parse_mode="Markdown",
         reply_markup=button
@@ -78,25 +81,23 @@ async def block_2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return MONTH_1[2]
 
 
-async def block_3(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def block_3(chat_id, context):
     if context.user_data.get('awaiting_password', False):
-        password = update.message.text
+        password = context.user_data.get('last_response')
         print(password)
 
         if password == MONTH_SECRET_PASSWORD:
             photo_url = os.path.join(settings.MEDIA_ROOT, "10sticker.webp")
             text = "Лови *10 таймпадиков!* И успехов в адаптации! 🍀"
-            await update.message.reply_sticker(
+            await context.bot.send_sticker(
                 sticker=open(photo_url, 'rb'),
+                chat_id=chat_id
             )
-            chat_id = update.effective_chat.id
             user = await get_user_by_chat_id(chat_id)
             user.timepad += 10
             await save_user(user)
-            await update.message.reply_text(text=text, parse_mode="Markdown")
-            await month_2.block_0(update, context)
-            return MONTH_2[0]
+            await context.bot.send_message(
+                chat_id=chat_id, text=text, parse_mode="Markdown"
+            )
         else:
-            await update.message.reply_text("Пароль неверный 😓 попробуй ещё раз!")
-            await month_2.block_0(update, context)
-            return MONTH_2[0]
+            await context.bot.send_message(chat_id=chat_id, text="Пароль неверный 😓 попробуй ещё раз!")
