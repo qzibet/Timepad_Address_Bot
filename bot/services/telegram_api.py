@@ -147,7 +147,7 @@ class TelegramBot:
         self.job_queue.run_daily(
             daily_alarm,
             time=datetime.time(
-                hour=10,
+                hour=12,
                 minute=0,
                 tzinfo=pytz.timezone("Europe/Moscow"),
             ),
