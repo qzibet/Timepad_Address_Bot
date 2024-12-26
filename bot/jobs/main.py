@@ -237,7 +237,8 @@ async def handle_user_response(update: Update, context: ContextTypes.DEFAULT_TYP
     try:
         user_state = await sync_to_async(lambda: UserConversationState.objects.get(user=user))()
     except UserConversationState.DoesNotExist:
-        await context.bot.send_message(chat_id=chat_id, text="Неизвестное состояние. Пожалуйста, начните сначала.")
+        # await context.bot.send_message(chat_id=chat_id, text="Неизвестное состояние. Пожалуйста, начните сначала.")
+        print()
         return
 
     # Разбор состояния
