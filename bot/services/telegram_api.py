@@ -148,10 +148,10 @@ class TelegramBot:
             daily_alarm,
             time=datetime.time(
                 hour=13,
-                minute=0,
+                minute=10,
                 tzinfo=pytz.timezone("Europe/Moscow"),
             ),
-            days=(0, 1, 2, 3, 4)
+            days=(0, 1, 2, 3, 4, 5)
         )
         print("зареган")
 
