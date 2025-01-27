@@ -59,3 +59,4 @@ admin.site.unregister(User)
 admin.site.register(TelegramUser)
 admin.site.register(Code)
 admin.site.register(FAQ)
+
