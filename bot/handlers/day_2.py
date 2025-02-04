@@ -4,7 +4,6 @@ import re
 from django.conf import settings
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.constants import ChatAction
-from telegram.ext import ContextTypes
 from asgiref.sync import sync_to_async
 import logging
 
@@ -138,7 +137,7 @@ async def block_3(chat_id, context):
         disable_web_page_preview=True
     )
     await context.bot.send_video(
-        video="BAACAgIAAxkBAAIobWdPf7nyTnbAEuFBH9eaXCbtn_ZzAAKwcQACD5l4SmPU-vMLf0ycNgQ",
+        video="BAACAgIAAxkBAAMoZ6IOX6caP-QsyuUDQET8E1hRtg0AArBxAAIPmXhK-W8F7S4PUN02BA",
         chat_id=chat_id,
     )
     return DAY_3[3]

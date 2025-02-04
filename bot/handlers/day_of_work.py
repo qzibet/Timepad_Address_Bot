@@ -96,7 +96,7 @@ async def block_1(chat_id, context):
     if user.work_type == 'Офис':
         await context.bot.send_video(
             chat_id=chat_id,
-            video="BAACAgIAAxkBAAIVMGc6bQdEZLDVp_0wEaPrIqQRJjRlAAK7aAACoAjRSTdax4VaYUryNgQ",
+            video="BAACAgIAAxkBAAMkZ6IORBkDn1DG2SOgh6Ez3SaiUZEAArtoAAKgCNFJcq0h00fMi3U2BA",
             parse_mode="Markdown",
             reply_markup=keyboard
         )
@@ -112,7 +112,7 @@ async def block_1(chat_id, context):
         )
         await context.bot.send_video(
             chat_id=chat_id,
-            video="BAACAgIAAxkBAAIVMGc6bQdEZLDVp_0wEaPrIqQRJjRlAAK7aAACoAjRSTdax4VaYUryNgQ",
+            video="BAACAgIAAxkBAAMkZ6IORBkDn1DG2SOgh6Ez3SaiUZEAArtoAAKgCNFJcq0h00fMi3U2BA",
             parse_mode="Markdown",
             reply_markup=keyboard
         )
@@ -517,7 +517,7 @@ async def block_14(chat_id, context):
         )
         await context.bot.send_video(
             chat_id=chat_id,
-            video="BAACAgIAAxkBAAIYj2c6fOSdrqhTWMmRRzNDDi-TZ1CfAAL2aAACoAjRSRIpjvM5t642NgQ",
+            video="BAACAgIAAxkBAAMmZ6IOVBBOmPKQnwesDdPBf8wc1YUAAvZoAAKgCNFJL_-tFpOWTiQ2BA",
             parse_mode="Markdown",
             reply_markup=keyboard
         )

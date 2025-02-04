@@ -291,9 +291,9 @@ async def block_7(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    document_url = os.path.join(settings.MEDIA_ROOT, "История_Стикерпака.pdf")
+    # document_url = os.path.join(settings.MEDIA_ROOT, "История_Стикерпака.pdf")
     message = await update.message.reply_document(
-        document="BQACAgIAAxkDAAITK2c1IbY1QkGSM7kqoeMhF-JsxflHAAL6YAACioSpSdRADa5NyBAkNgQ",
+        document="BQACAgIAAxkDAANcZ6IiMzIEqOMstlD09xxE2mjUj6AAAlBmAALiVBFJjuOm09EauKw2BA",
         filename="История_Стикерпака.pdf",
         reply_markup=keyboard,
         connect_timeout=120,
@@ -366,7 +366,7 @@ async def block_9(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Наше здание - *ГОНЧАР*. \n\n"
             "*Если ты на машине:* рядом с нами есть бесплатные парковки, а на территории самой мануфактуры - платные."
         )
-        video_url = "BAACAgIAAxkBAAIb4Wc7gXMEHvew2EeS9v0YIKbvyupXAAKbVwAC1grhSSjoVeCmoUcBNgQ"
+        video_url = "BAACAgIAAxkBAAMiZ6INdkp1HfmNTVaBAbCVLx2SCi4AAptXAALWCuFJszWXkDnR_D82BA"
         await update.message.reply_video(video=video_url, read_timeout=120, write_timeout=120, connect_timeout=120)
         await update.message.reply_text(
             text=text,
